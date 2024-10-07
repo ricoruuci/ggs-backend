@@ -100,4 +100,51 @@ class User extends Authenticatable
         );
     }
 
+    public function cekPassword($userid, $oldpassword)
+    {
+        $password = $this::myCrypt($oldpassword);
+
+        $result = DB::selectOne(
+            'SELECT userid FROM sysmsuser WHERE userid = :userid AND passwd = :password',
+            [
+                'userid' => $userid,
+                'password' => $password
+            ]
+        );
+
+        return $result;
+    }
+
+    public function changePassword($userid, $newpassword)
+    {
+        $password = $this::myCrypt($newpassword);
+
+        $result = DB::update(
+            "UPDATE sysmsuser set passwd=:password WHERE userid = :userid ",
+            [
+                'userid' => $userid,
+                'password' => $password
+            ]
+        );
+
+        return $result;
+    }
+
+
+    public function getMenu($userid)
+    {
+
+        $result = DB::select(
+            "SELECT a.kdmenu,a.nmmenu,a.parent from sysmenu a 
+            inner join sysmsmenugrouptrustee b on a.kdmenu=b.kdmenu 
+            where a.fgactive='y' and b.kdgroup=(select x.kdgroup from sysmsuser x where x.userid=:userid)
+            order by kdmenu ",
+            [
+                'userid' => $userid
+            ]
+        );
+
+        return $result;
+    }
+
 }
