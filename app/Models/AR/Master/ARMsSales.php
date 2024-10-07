@@ -104,25 +104,17 @@ class ARMsSales extends BaseModel
 
     function getListData($param)
     {
-        if($param['sortby']=='salesid')
-        {
+        if ($param['sortby'] == 'salesid') {
             $order = 'a.salesid';
-        }
-        else
-        {
+        } else {
             $order = 'a.salesname';
         }
 
-        if($param['active']=='all')
-        {
+        if ($param['active'] == 'all') {
             $active = '0,1,2';
-        }
-        else if($param['active']=='ya')
-        {
+        } else if ($param['active'] == 'ya') {
             $active = '1';
-        }
-        else
-        {
+        } else {
             $active = '0,2';
         }
 
@@ -135,8 +127,8 @@ class ARMsSales extends BaseModel
             and a.fgactive in ($active)
             order by $order",
             [
-                'salesidkeyword' => '%'.$param['salesidkeyword'].'%',
-                'salesnamekeyword' => '%'.$param['salesnamekeyword'].'%'
+                'salesidkeyword' => '%' . $param['salesidkeyword'] . '%',
+                'salesnamekeyword' => '%' . $param['salesnamekeyword'] . '%'
             ]
         );
 
@@ -146,7 +138,7 @@ class ARMsSales extends BaseModel
     function getData($param)
     {
         $result = DB::selectOne(
-            "SELECT a.salesid,a.salesname,a.address,a.phone as telp,a.hp,a.email,a.jabatan,a.tglgabung
+            "SELECT a.salesid,a.salesname,a.address,a.phone as telp,a.hp,a.email,a.jabatan,a.tglgabung,
             a.upddate,a.upduser,a.note,a.fgactive,
             case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,a.foto as foto1,a.sas as foto2
             from armssales a where a.salesid=:salesid",
@@ -187,11 +179,10 @@ class ARMsSales extends BaseModel
     public function beforeAutoNumber($salesname)
     {
 
-        $nama = strtoupper(substr($salesname,0,1));
+        $nama = strtoupper(substr($salesname, 0, 1));
 
         $autoNumber = $this->autoNumber($this->table, 'salesid', $nama, '000');
 
         return $autoNumber;
     }
-
 }

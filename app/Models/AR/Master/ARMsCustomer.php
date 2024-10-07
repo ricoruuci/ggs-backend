@@ -39,9 +39,9 @@ class ARMsCustomer extends BaseModel
 
         $result = DB::insert(
             "INSERT INTO armscustomer
-            (custid,custname,address,city,phone,fax,email,note,custtype,upddate,upduser,limitpiutang,limitasli,term,fgactive,salesid,fgkoma,hterm,up,alamat) 
+            (custid,custname,address,city,phone,fax,email,note,custtype,upddate,upduser,limitpiutang,limitasli,term,salesid,fgkoma,hterm,up,alamat) 
             VALUES 
-            (:custid,:custname,:alamat,:kota,:telp,:fax,:email,:note,:tipe,getdate(),:upduser,:limitpiutang,:limitasli,:term,'Y',:salesid,'Y',:termin,:cp,:alamatnpwp)",
+            (:custid,:custname,:alamat,:kota,:telp,:fax,:email,:note,:tipe,getdate(),:upduser,:limitpiutang,:limitasli,:term,:salesid,'Y',:termin,:cp,:alamatnpwp)",
             [
                 'custid' => $param['custid'],
                 'custname' => $param['custname'],
@@ -59,7 +59,7 @@ class ARMsCustomer extends BaseModel
                 'cp' => $param['cp'],
                 'term' => $param['term'],
                 'alamatnpwp' => $param['alamatnpwp'],
-                'tipe' => $param['tipe']   
+                'tipe' => $param['tipe']
             ]
         );
 
@@ -76,8 +76,8 @@ class ARMsCustomer extends BaseModel
 
         $result = DB::select(
             "SELECT a.custid,a.custname,isnull(a.Address,'') as alamat,isnull(a.city,'') as kota,isnull(a.up,'') as contactperson,isnull(a.phone,'') as telp,
-            isnull(a.fax,'') as fax,isnull(a.email,'') as email,isnull(a.limitpiutang,0) as limitpiutang,isnull(a.term,'') as term,isnull(a.hterm,0) as termin
-            isnull(a.note,'') as note,a.fgactive,a.upddate,a.upduser,a.salesid,
+            isnull(a.fax,'') as fax,isnull(a.email,'') as email,isnull(a.limitpiutang,0) as limitpiutang,isnull(a.term,'') as term,isnull(a.hterm,0) as termin,
+            isnull(a.note,'') as note,a.upddate,a.upduser,a.salesid,
             isnull((select b.salesname from armssales b where b.salesid=a.salesid),'') as salesname,isnull(a.alamat,'') as alamatnpwp     
             from armscustomer a 
             where a.custid like :custidkeyword and a.custname like :custnamekeyword
@@ -95,8 +95,8 @@ class ARMsCustomer extends BaseModel
     {
         $result = DB::selectOne(
             "SELECT a.custid,a.custname,isnull(a.Address,'') as alamat,isnull(a.city,'') as kota,isnull(a.up,'') as contactperson,isnull(a.phone,'') as telp,
-            isnull(a.fax,'') as fax,isnull(a.email,'') as email,isnull(a.limitpiutang,0) as limitpiutang,isnull(a.term,'') as term,isnull(a.hterm,0) as termin
-            isnull(a.note,'') as note,a.fgactive,a.upddate,a.upduser,a.salesid,
+            isnull(a.fax,'') as fax,isnull(a.email,'') as email,isnull(a.limitpiutang,0) as limitpiutang,isnull(a.term,'') as term,isnull(a.hterm,0) as termin,
+            isnull(a.note,'') as note,a.upddate,a.upduser,a.salesid,
             isnull((select b.salesname from armssales b where b.salesid=a.salesid),'') as salesname,isnull(a.alamat,'') as alamatnpwp
             from ARMsCustomer a WHERE a.custid = :custid ",
             [
@@ -125,7 +125,7 @@ class ARMsCustomer extends BaseModel
             term = :term,
             hterm = :termin,
             salesid = :salesid,
-            cp = :cp,
+            up = :cp,
             alamat = :alamatnpwp,
             custtype = :tipe
             WHERE custid = :custid',

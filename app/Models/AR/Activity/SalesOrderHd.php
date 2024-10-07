@@ -162,8 +162,7 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='RD' THEN 'JUAL RUGI & OVERDUE'
             WHEN A.Jenis='RL' THEN 'JUAL RUGI & OVERLIMIT'
             WHEN A.Jenis='DL' THEN 'OVERDUE & OVERLIMIT'
-            WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otoby,a.svc,a.attn,a.telp,
-            a.upddate,a.upduser
+            WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otoby,a.svc,a.attn,a.telp,a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
@@ -202,7 +201,7 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='RD' THEN 'JUAL RUGI & OVERDUE'
             WHEN A.Jenis='RL' THEN 'JUAL RUGI & OVERLIMIT'
             WHEN A.Jenis='DL' THEN 'OVERDUE & OVERLIMIT'
-            WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otoby,a.svc,a.attn,a.telp
+            WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otoby,a.svc,a.attn,a.telp,
             a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
@@ -254,7 +253,7 @@ class SalesOrderHd extends BaseModel
                  WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' 
             END as note 
             FROM ARTrPurchaseOrderHd A INNER JOIN ARMsCustomer B ON A.CustID=B.CustID 
-            INNER JOIN ARMsSales C ON A.SalesID=C.SalesID WHERE A.Jenis NOT IN ('Y','X','T') AND A.FgClose<>'Y' 
+            INNER JOIN ARMsSales C ON A.SalesID=C.SalesID WHERE A.Jenis NOT IN ('Y','X','T')  
             ORDER BY CONVERT(VARCHAR(8),Transdate,112),POID"
         );
 
