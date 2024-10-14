@@ -54,7 +54,7 @@ class SalesOrderHd extends BaseModel
             "INSERT INTO artrpurchaseorderhd 
             (poid,prid,custid,transdate,note,upddate,upduser,tglkirim,salesid,warehouseid,jenis,fob,fgtax,nilaippn,administrasi,currid,address,attn,telp,fgkomisi,ship,svc,term,hterm,disc) 
             VALUES 
-            (:soid,:pocust,:custid,:transdate,:note,getdate(),:upduser,:tglkirim,:salesid,:warehouseid,'T',:fob,:fgtax,:nilaitax,0,:currid,:address,:attn,:telp,'E',:ship,:svc,:term,:termin,:disc)",
+            (:soid,:pocust,:custid,:transdate,:note,getdate(),:upduser,:tglkirim,:salesid,'01GU','T',:fob,:fgtax,:nilaitax,0,:currid,:address,:attn,:telp,'E',:ship,:svc,:term,:termin,:disc)",
             [
                 'soid' => $param['soid'],
                 'pocust' => $param['pocust'],
@@ -64,7 +64,6 @@ class SalesOrderHd extends BaseModel
                 'upduser' => $param['upduser'],
                 'tglkirim' => $param['tglkirim'],
                 'salesid' => $param['salesid'],
-                'warehouseid' => $param['warehouseid'],
                 'fob' => $param['fob'],
                 'fgtax' => $param['fgtax'],
                 'nilaitax' => $param['nilaitax'],
@@ -95,7 +94,6 @@ class SalesOrderHd extends BaseModel
             upduser = :upduser,
             tglkirim = :tglkirim,
             salesid = :salesid,
-            warehouseid = :warehouseid,
             fob = :fob,
             fgtax = :fgtax,
             nilaippn = :nilaitax,
@@ -118,7 +116,6 @@ class SalesOrderHd extends BaseModel
                 'upduser' => $param['upduser'],
                 'tglkirim' => $param['tglkirim'],
                 'salesid' => $param['salesid'],
-                'warehouseid' => $param['warehouseid'],
                 'fob' => $param['fob'],
                 'fgtax' => $param['fgtax'],
                 'nilaitax' => $param['nilaitax'],
@@ -146,7 +143,7 @@ class SalesOrderHd extends BaseModel
         }
 
         $result = DB::select(
-            "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,a.warehouseid,
+            "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01)) else a.ttlso end as subtotal,
             case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01))*(a.ppn*0.01) else 0 end as ppn,
@@ -185,7 +182,7 @@ class SalesOrderHd extends BaseModel
     function getData($param)
     {
         $result = DB::selectOne(
-            "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,a.warehouseid,
+            "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01)) else a.ttlso end as subtotal,
             case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01))*(a.ppn*0.01) else 0 end as ppn,
