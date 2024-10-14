@@ -144,6 +144,7 @@ class SalesOrderHd extends BaseModel
 
         $result = DB::select(
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
+            isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01)) else a.ttlso end as subtotal,
             case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01))*(a.ppn*0.01) else 0 end as ppn,
@@ -183,6 +184,7 @@ class SalesOrderHd extends BaseModel
     {
         $result = DB::selectOne(
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
+            isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01)) else a.ttlso end as subtotal,
             case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01))*(a.ppn*0.01) else 0 end as ppn,
@@ -362,12 +364,12 @@ class SalesOrderHd extends BaseModel
             isnull(sum(qty*(price+svc))*0.01*b.ppn,0) as ppn,
             isnull(sum(qty*(price+svc))*(100+b.ppn)*0.01,0) as total,
             isnull(sum(qty*(price+svc))*(100+b.ppn)*0.01,0)+isnull(b.administrasi,0) as grandtotal,
-            isnull(sum(qty*((price)-modal)),0)-isnull(a.svc,0) as margin,
-            case when sum(qty*modal) = 0 then 100 else (sum(qty*(price-modal))/sum(qty*modal)*100)-isnull(a.svc,0)  end as pmargin
+            isnull(sum(qty*((price)-modal)),0)-isnull(svc,0) as margin,
+            case when sum(qty*modal) = 0 then 100 else (sum(qty*(price-modal))/sum(qty*modal)*100) end as pmargin
             from artrpurchaseorderdt a
             inner join artrpurchaseorderhd b on a.poid=b.poid
             where b.poid=:soid
-            group by b.administrasi,b.ppn,b.poid
+            group by b.administrasi,b.ppn,b.poid,b.svc
             ',
             [
                 'soid' => $param['soid']
