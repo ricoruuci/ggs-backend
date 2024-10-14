@@ -52,9 +52,9 @@ class SalesOrderHd extends BaseModel
 
         $result = DB::insert(
             "INSERT INTO artrpurchaseorderhd 
-            (poid,prid,custid,transdate,note,upddate,upduser,tglkirim,salesid,warehouseid,jenis,fob,fgtax,nilaippn,administrasi,currid,address,attn,telp,fgkomisi,ship,svc,term,hterm,disc) 
+            (poid,prid,custid,transdate,note,upddate,upduser,tglkirim,salesid,warehouseid,jenis,fob,fgtax,nilaippn,administrasi,currid,address,attn,telp,fgkomisi,ship,svc,term,hterm,disc,tbagasi) 
             VALUES 
-            (:soid,:pocust,:custid,:transdate,:note,getdate(),:upduser,:tglkirim,:salesid,'01GU','T',:fob,:fgtax,:nilaitax,0,:currid,:address,:attn,:telp,'E',:ship,:svc,:term,:termin,:disc)",
+            (:soid,:pocust,:custid,:transdate,:note,getdate(),:upduser,:tglkirim,:salesid,'01GU','T',:fob,:fgtax,:nilaitax,0,:currid,:address,:attn,:telp,'E',:ship,:svc,:term,:termin,:disc,:tb)",
             [
                 'soid' => $param['soid'],
                 'pocust' => $param['pocust'],
@@ -76,6 +76,7 @@ class SalesOrderHd extends BaseModel
                 'term' => $param['term'],
                 'termin' => $param['termin'],
                 'disc' => $param['disc'],
+                'tb' => $param['tb'],
             ]
         );
 
@@ -106,6 +107,7 @@ class SalesOrderHd extends BaseModel
             term = :term,
             hterm = :termin,
             disc = :disc
+            tbagasi = :tb
             WHERE poid = :soid',
             [
                 'soid' => $param['soid'],
@@ -127,7 +129,8 @@ class SalesOrderHd extends BaseModel
                 'svc' => $param['svc'],
                 'term' => $param['term'],
                 'termin' => $param['termin'],
-                'disc' => $param['disc']
+                'disc' => $param['disc'],
+                'tb' => $param['tb']
             ]
         );
 
@@ -360,17 +363,19 @@ class SalesOrderHd extends BaseModel
     {
 
         $result = DB::selectONe(
-            'SELECT b.poid,isnull(sum(qty*(price+svc)),0) as subtotal,
-            isnull(sum(qty*(price+svc))*0.01*b.ppn,0) as ppn,
-            isnull(sum(qty*(price+svc))*(100+b.ppn)*0.01,0) as total,
-            isnull(sum(qty*(price+svc))*(100+b.ppn)*0.01,0)+isnull(b.administrasi,0) as grandtotal,
-            isnull(sum(qty*((price)-modal)),0)-isnull(svc,0) as margin,
-            case when sum(qty*modal) = 0 then 100 else (sum(qty*(price-modal))/sum(qty*modal)*100) end as pmargin
+            "SELECT isnull(sum(qty*price),0) as subtotal,
+            sum(qty*price)*isnull(b.disc,0)/100 as disc,
+            case when b.fgtax='y' then isnull((sum(qty*price)-(sum(qty*price)*isnull(b.disc,0)/100))*b.nilaippn/100,0) else 0 end as ppn,
+            case when b.fgtax='y' then isnull((sum(qty*price)-(sum(qty*price)*isnull(b.disc,0)/100))*(1+(b.nilaippn/100)) ,0) 
+            else isnull(sum(qty*price)-(sum(qty*price)*isnull(b.disc,0)/100),0) end as total,
+            isnull(sum(qty*price)*1.1,0)+isnull(b.administrasi,0) as grandtotal,
+            isnull(sum(qty*(price-modal))-(sum(qty*price)*isnull(b.disc,0)/100)-b.svc,0) as margin,
+            case when sum(qty*modal) = 0 then 100 else ((sum(qty*(price-modal))-(sum(qty*price)*isnull(b.disc,0)/100)-b.svc)/sum(qty*modal)*100) end as pmargin
             from artrpurchaseorderdt a
             inner join artrpurchaseorderhd b on a.poid=b.poid
-            where b.poid=:soid
-            group by b.administrasi,b.ppn,b.poid,b.svc
-            ',
+            where a.poid=:soid
+            group by b.administrasi,b.fgtax,b.svc,b.nilaippn,b.disc
+            ",
             [
                 'soid' => $param['soid']
             ]
@@ -382,10 +387,12 @@ class SalesOrderHd extends BaseModel
     function updateTotal($param)
     {
         $result = DB::update(
-            'UPDATE artrpurchaseorderhd SET ttlso = :grandtotal WHERE poid = :soid',
+            'UPDATE artrpurchaseorderhd SET ttlso = :grandtotal,stso = :subtotal,ppn = :ppn WHERE poid = :soid',
             [
                 'soid' => $param['soid'],
-                'grandtotal' => $param['grandtotal']
+                'grandtotal' => $param['grandtotal'],
+                'subtotal' => $param['subtotal'],
+                'ppn' => $param['ppn'],
             ]
         );
 

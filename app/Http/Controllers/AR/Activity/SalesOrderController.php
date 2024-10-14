@@ -83,7 +83,8 @@ class SalesOrderController extends Controller
                 'svc' => $request->input('svc'),
                 'term' => $request->input('term'),
                 'termin' => $request->input('termin'),
-                'disc' => $request->input('disc') ?? 0
+                'disc' => $request->input('disc') ?? 0,
+                'tb' => $request->input('svc')
             ]);
 
             if ($insertheader == false) {
@@ -130,6 +131,8 @@ class SalesOrderController extends Controller
 
             $sales->updateTotal([
                 'grandtotal' => $hitung->grandtotal,
+                'subtotal' => $hitung->subtotal,
+                'ppn' => $hitung->ppn,
                 'soid' => $hasilpoid
             ]);
 
@@ -229,7 +232,8 @@ class SalesOrderController extends Controller
                 'svc' => $request->input('svc'),
                 'term' => $request->input('term'),
                 'termin' => $request->input('termin'),
-                'disc' => $request->input('disc') ?? 0
+                'disc' => $request->input('disc') ?? 0,
+                'tb' => $request->input('svc') ?? 0
             ]);
 
             if ($insertheader == false) {
@@ -279,6 +283,8 @@ class SalesOrderController extends Controller
 
             $sales->updateTotal([
                 'grandtotal' => $hitung->grandtotal,
+                'subtotal' => $hitung->subtotal,
+                'ppn' => $hitung->ppn,
                 'soid' => $request->input('soid')
             ]);
 
