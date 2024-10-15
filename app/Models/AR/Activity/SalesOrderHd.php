@@ -149,8 +149,7 @@ class SalesOrderHd extends BaseModel
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
-            case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01)) else a.ttlso end as subtotal,
-            case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01))*(a.ppn*0.01) else 0 end as ppn,
+            a.stso as subtotal,a.ppn as ppn,
             a.ttlso as grandtotal,a.ttlso,
             isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
             CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
@@ -189,8 +188,7 @@ class SalesOrderHd extends BaseModel
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
-            case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01)) else a.ttlso end as subtotal,
-            case when a.fgtax='Y' then a.ttlso/(1+(a.ppn*0.01))*(a.ppn*0.01) else 0 end as ppn,
+            a.stso as subtotal,a.ppn as ppn,
             a.ttlso as grandtotal,a.ttlso,
             isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
             CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
