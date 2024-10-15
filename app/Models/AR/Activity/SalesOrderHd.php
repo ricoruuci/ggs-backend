@@ -106,7 +106,7 @@ class SalesOrderHd extends BaseModel
             svc = :svc,
             term = :term,
             hterm = :termin,
-            disc = :disc
+            disc = :disc,
             tbagasi = :tb
             WHERE poid = :soid',
             [
@@ -241,20 +241,30 @@ class SalesOrderHd extends BaseModel
     function getListOto()
     {
         $result = DB::select(
-            "SELECT a.poid as soid,a.custid,B.custname,a.transdate,A.FgTax as fgtax,ISNULL(A.TTLSO,0) as total,
-            a.salesid,C.SalesName as salesname,
-            CASE WHEN A.Jenis='L' THEN 'OVERLIMIT' 
-                 WHEN A.Jenis='D' THEN 'OVERDUE' 
-                 WHEN A.Jenis='R' THEN 'JUAL RUGI' 
-                 WHEN A.Jenis='W' THEN 'WAITING APPROVAL ONLY' 
-                 WHEN A.Jenis='RD' THEN 'JUAL RUGI & OVERDUE' 
-                 WHEN A.Jenis='RL' THEN 'JUAL RUGI & OVERLIMIT' 
-                 WHEN A.Jenis='DL' THEN 'OVERDUE & OVERLIMIT' 
-                 WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' 
-            END as note 
-            FROM ARTrPurchaseOrderHd A INNER JOIN ARMsCustomer B ON A.CustID=B.CustID 
-            INNER JOIN ARMsSales C ON A.SalesID=C.SalesID WHERE A.Jenis NOT IN ('Y','X','T')  
-            ORDER BY CONVERT(VARCHAR(8),Transdate,112),POID"
+            "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
+            isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
+            isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
+            a.stso as subtotal,a.ppn as ppn,
+            a.ttlso as grandtotal,a.ttlso,
+            isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
+            CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
+            WHEN A.Jenis='T' THEN 'BELUM PROSES'
+            WHEN A.Jenis='Y' THEN 'APPROVED'
+            WHEN A.Jenis='X' THEN 'REJECTED'
+            WHEN A.Jenis='D' THEN 'OVERDUE'
+            WHEN A.Jenis='W' THEN 'WAITING APPROVAL ONLY'
+            WHEN A.Jenis='R' THEN 'JUAL RUGI'
+            WHEN A.Jenis='RD' THEN 'JUAL RUGI & OVERDUE'
+            WHEN A.Jenis='RL' THEN 'JUAL RUGI & OVERLIMIT'
+            WHEN A.Jenis='DL' THEN 'OVERDUE & OVERLIMIT'
+            WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,
+            a.upddate,a.upduser
+            from ARTrPurchaseOrderHd a 
+            inner join armscustomer b on a.custid=b.custid
+            inner join armssales c on a.salesid=c.salesid
+            left join armssales d on a.warehouseid=d.salesid
+            WHERE A.Jenis NOT IN ('Y','X','T')  
+            ORDER BY CONVERT(VARCHAR(8),A.Transdate,112),A.POID"
         );
 
         return $result;
