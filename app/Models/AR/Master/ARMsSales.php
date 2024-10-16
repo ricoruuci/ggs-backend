@@ -43,7 +43,7 @@ class ARMsSales extends BaseModel
             tomzet,kom1,kom2,kom3,kom4,foto,sas)
             VALUES
             (:salesid,:salesname,:address,:telp,:hp,:email,:note,getdate(),:upduser,:jabatan,0,0,:fgactive,:tglgabung,0,0,
-            0,0,0,0,0,:foto1,:foto2)",
+            :tomzet,:kom1,:kom2,:kom3,:kom4,:foto1,:foto2)",
             [
                 'salesid' => $param['salesid'],
                 'salesname' => $param['salesname'],
@@ -57,7 +57,12 @@ class ARMsSales extends BaseModel
                 'fgactive' => $param['fgactive'],
                 'tglgabung' => $param['tglgabung'],
                 'foto1' => $param['foto1'],
-                'foto2' => $param['foto2']
+                'foto2' => $param['foto2'],
+                'tomzet' => $param['tomzet'],
+                'kom1' => $param['kom1'],
+                'kom2' => $param['kom2'],
+                'kom3' => $param['kom3'],
+                'kom4' => $param['kom4']
             ]
         );
 
@@ -80,7 +85,13 @@ class ARMsSales extends BaseModel
             fgactive =:fgactive,
             tglgabung = :tglgabung,
             foto = :foto1,
-            sas = :foto2
+            sas = :foto2,
+            tomzet = :tomzet,
+            kom1 = :kom1,
+            kom2 = :kom2,
+            kom3 = :kom3,
+            kom4 = :kom4
+            
             WHERE salesid = :salesid ",
             [
                 'salesid' => $param['salesid'],
@@ -95,7 +106,12 @@ class ARMsSales extends BaseModel
                 'fgactive' => $param['fgactive'],
                 'tglgabung' => $param['tglgabung'],
                 'foto1' => $param['foto1'],
-                'foto2' => $param['foto2']
+                'foto2' => $param['foto2'],
+                'tomzet' => $param['tomzet'],
+                'kom1' => $param['kom1'],
+                'kom2' => $param['kom2'],
+                'kom3' => $param['kom3'],
+                'kom4' => $param['kom4']
             ]
         );
 
@@ -121,7 +137,8 @@ class ARMsSales extends BaseModel
         $result = DB::select(
             "SELECT a.salesid,a.salesname,a.address,a.phone as telp,a.hp,a.email,a.jabatan,a.tglgabung,
             a.upddate,a.upduser,a.note,a.fgactive,
-            case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,a.foto as foto1,a.sas as foto2
+            case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,a.foto as foto1,a.sas as foto2,
+            a.kom1,a.kom2,a.kom3,a.kom4,a.tomzet
             from armssales a
             where a.salesid like :salesidkeyword and a.salesname like :salesnamekeyword
             and a.fgactive in ($active)
@@ -140,7 +157,8 @@ class ARMsSales extends BaseModel
         $result = DB::selectOne(
             "SELECT a.salesid,a.salesname,a.address,a.phone as telp,a.hp,a.email,a.jabatan,a.tglgabung,
             a.upddate,a.upduser,a.note,a.fgactive,
-            case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,a.foto as foto1,a.sas as foto2
+            case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,a.foto as foto1,a.sas as foto2,
+            a.kom1,a.kom2,a.kom3,a.kom4,a.tomzet
             from armssales a where a.salesid=:salesid",
             [
                 'salesid' => $param['salesid']

@@ -23,7 +23,7 @@ class SalesController extends Controller
 
             $cek = $sales->cekSales($request->input('salesid'));
 
-            if($cek==false){
+            if ($cek == false) {
 
                 return $this->responseError('kode sales tidak terdaftar dalam master', 400);
             }
@@ -35,9 +35,7 @@ class SalesController extends Controller
             );
 
             return $this->responseData($result);
-        }
-        else
-        {
+        } else {
             $result = $sales->getListData([
                 'salesidkeyword' => $request->input('salesidkeyword') ?? '',
                 'salesnamekeyword' => $request->input('salesnamekeyword') ?? '',
@@ -58,19 +56,15 @@ class SalesController extends Controller
 
         $validator = Validator::make($request->all(), $sales::$rulesInsert, $sales::$messagesInsert);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return $this->responseError($validator->messages(), 400);
-        }
-        else
-        {
+        } else {
 
             $kodecust = $sales->beforeAutoNumber($request->input('salesname'));
 
             DB::beginTransaction();
 
-            try
-            {
+            try {
                 $insert = $sales->insertData([
                     'salesid' => $kodecust,
                     'salesname' => $request->input('salesname'),
@@ -86,32 +80,29 @@ class SalesController extends Controller
                     'fgactive' => $request->input('fgactive'),
                     'tglgabung' => $request->input('tglgabung'),
                     'foto1' => $request->input('foto1'),
-                    'foto2' => $request->input('foto2')
+                    'foto2' => $request->input('foto2'),
+                    'tomzet' => $request->input('tomzet'),
+                    'kom1' => $request->input('kom1'),
+                    'kom2' => $request->input('kom2'),
+                    'kom3' => $request->input('kom3'),
+                    'kom4' => $request->input('kom4')
                 ]);
 
-                if ($insert)
-                {
+                if ($insert) {
                     DB::commit();
 
-                    return $this->responseSuccess('insert berhasil', 200, [ 'salesid' => $kodecust ]);
-                }
-                else
-                {
+                    return $this->responseSuccess('insert berhasil', 200, ['salesid' => $kodecust]);
+                } else {
                     DB::rollBack();
 
                     return $this->responseError('insert gagal', 400);
                 }
-
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 DB::rollBack();
 
                 return $this->responseError($e->getMessage(), 400);
             }
-
         }
-
     }
 
     public function updateAllData(Request $request)
@@ -120,16 +111,13 @@ class SalesController extends Controller
 
         $validator = Validator::make($request->all(), $customer::$rulesUpdateAll, $customer::$messagesUpdate);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return $this->responseError($validator->messages(), 400);
-        }
-        else
-        {
+        } else {
 
             $cek = $customer->cekSales($request->input('salesid'));
 
-            if($cek==false){
+            if ($cek == false) {
 
                 return $this->responseError('kode sales tidak terdaftar dalam master', 400);
             }
@@ -137,8 +125,7 @@ class SalesController extends Controller
 
             DB::beginTransaction();
 
-            try
-            {
+            try {
                 $updated = $customer->updateAllData([
                     'salesid' => $request->input('salesid'),
                     'salesname' => $request->input('salesname'),
@@ -154,34 +141,29 @@ class SalesController extends Controller
                     'tglgabung' => $request->input('tglgabung'),
                     'foto1' => $request->input('foto1'),
                     'foto2' => $request->input('foto2'),
+                    'tomzet' => $request->input('tomzet'),
+                    'kom1' => $request->input('kom1'),
+                    'kom2' => $request->input('kom2'),
+                    'kom3' => $request->input('kom3'),
+                    'kom4' => $request->input('kom4')
                 ]);
 
-                if ($updated)
-                {
+                if ($updated) {
 
                     DB::commit();
 
-                    return $this->responseSuccess('update berhasil', 200, [ 'salesid' => $request->input('salesid') ]);
-                }
-                else
-                {
+                    return $this->responseSuccess('update berhasil', 200, ['salesid' => $request->input('salesid')]);
+                } else {
                     DB::rollBack();
 
                     return $this->responseError('update gagal', 400);
                 }
-
-
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 DB::rollBack();
 
                 return $this->responseError($e->getMessage(), 400);
             }
-
-
         }
-
     }
 
     public function deleteData(Request $request)
@@ -190,39 +172,31 @@ class SalesController extends Controller
 
         $cek = $customer->cekSales($request->input('salesid'));
 
-        if($cek==false){
+        if ($cek == false) {
 
             return $this->responseError('kode sales tidak terdaftar dalam master', 400);
         }
 
         DB::beginTransaction();
 
-        try
-        {
+        try {
             $deleted = $customer->deleteData([
                 'salesid' => $request->input('salesid')
             ]);
 
-            if ($deleted)
-            {
+            if ($deleted) {
                 DB::commit();
 
-                return $this->responseSuccess('delete berhasil', 200, [ 'salesid' => $request->input('salesid') ]);
-            }
-            else
-            {
+                return $this->responseSuccess('delete berhasil', 200, ['salesid' => $request->input('salesid')]);
+            } else {
                 DB::rollBack();
 
                 return $this->responseError('delete gagal', 400);
             }
-
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             DB::rollBack();
 
             return $this->responseError($e->getMessage(), 400);
         }
     }
-
 }
