@@ -37,8 +37,8 @@ class CustomerController extends Controller
                     'alamat' => $request->input('alamat') ?? '',
                     'kota' => $request->input('kota'),
                     'telp' => $request->input('telp'),
-                    'fax' => $request->input('fax'),
-                    'email' => $request->input('email') ?? '',
+                    'email' => $request->input('email'),
+                    'npwp' => $request->input('npwp') ?? '',
                     'note' => $request->input('note') ?? '',
                     'upduser' => Auth::user()->currentAccessToken()['namauser'],
                     'limitpiutang' => $request->input('limitpiutang'),
@@ -127,8 +127,8 @@ class CustomerController extends Controller
                     'alamat' => $request->input('alamat'),
                     'kota' => $request->input('kota'),
                     'telp' => $request->input('telp'),
-                    'fax' => $request->input('fax'),
                     'email' => $request->input('email'),
+                    'npwp' => $request->input('npwp'),
                     'note' => $request->input('note'),
                     'upduser' => Auth::user()->currentAccessToken()['namauser'],
                     'limitpiutang' => $request->input('limitpiutang'),
@@ -137,7 +137,7 @@ class CustomerController extends Controller
                     'cp' => $request->input('cp'),
                     'alamatnpwp' => $request->input('alamatnpwp'),
                     'salesid' => $request->input('salesid'),
-                    'tipe' => $request->input('tipe') 
+                    'tipe' => $request->input('tipe')
                 ]);
 
                 if ($updated) {
