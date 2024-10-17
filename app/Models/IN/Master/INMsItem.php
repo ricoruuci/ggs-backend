@@ -43,7 +43,7 @@ class INMsItem extends BaseModel
             "INSERT INTO inmsitem
             (productid,groupid,itemid,itemname,partno,uomid,note,userprice,minimumstok,upddate,upduser,ctk,fgactive,komisi,dealerprice) 
             VALUES 
-            (:productid,:groupid,:itemid,:itemname,:partno,:uomid,:note,:userprice,:minimumstok, getdate(), :upduser, 'Y','Y',0,0)",
+            (:productid,:groupid,:itemid,:itemname,:partno,:uomid,:note,:userprice,0, getdate(), :upduser, 'Y','Y',0,:dealerprice)",
             [
                 'itemid' => $param['itemid'],
                 'itemname' => $param['itemname'],
@@ -53,7 +53,7 @@ class INMsItem extends BaseModel
                 'uomid' => $param['satuan'],
                 'note' => $param['note'],
                 'userprice' => $param['userprice'],
-                'minimumstok' => $param['minimumstok'],
+                'dealerprice' => $param['dealerprice'],
                 'upduser' => $param['upduser']
             ]
         );
@@ -73,7 +73,7 @@ class INMsItem extends BaseModel
 
         $result = DB::select(
             "SELECT a.itemid,a.itemname,a.productid,b.productdesc
-            ,a.groupid,c.groupdesc,isnull(a.partno,'') as partno,a.uomid from inmsitem a 
+            ,a.groupid,c.groupdesc,isnull(a.partno,'') as partno,a.uomid,a.userprice,a.dealerprice from inmsitem a 
             inner join inmsproduct b on a.productid=b.productid
             inner join inmsgroup c on a.groupid=c.groupid
             where a.fgactive='Y' and itemid like :itemidkeyword and itemname like :itemnamekeyword order by $order ",
@@ -86,30 +86,14 @@ class INMsItem extends BaseModel
         return $result;
     }
 
-    function getListBarangSO($param)
-    {
-        $result = DB::select(
-            "SELECT k.itemid,l.itemname,k.price,k.keterangan,k.qty-k.jumpo as jumlah,l.uomid from (
-            select a.poid,isnull(a.modal,0) as price,isnull(a.qty,0) as qty,a.itemid,isnull(a.keterangan,'') as keterangan,
-            isnull((select sum(x.qty) from artrpenawarandt x 
-            inner join artrpenawaranhd y on x.gbuid=y.gbuid and y.flag='b' where y.soid=a.poid and x.itemid=a.itemid),0) as jumpo 
-            from artrpurchaseorderdt a
-            ) as k inner join inmsitem l on k.itemid=l.itemid 
-            where k.poid=:soid ",
-            [
-                "soid" => $param['soid']
-            ]
-        );
 
-        return $result;
-    }
 
     function getData($param)
     {
 
         $result = DB::selectOne(
             "SELECT a.itemid,a.itemname,a.productid,b.productdesc
-            ,a.groupid,c.groupdesc,isnull(a.partno,'') as partno,a.uomid from inmsitem a
+            ,a.groupid,c.groupdesc,isnull(a.partno,'') as partno,a.uomid,a.userprice,a.dealerprice from inmsitem a
             inner join inmsproduct b on a.productid=b.productid
             inner join inmsgroup c on a.groupid=c.groupid
             where a.fgactive='Y' and itemid=:itemid ",
@@ -128,8 +112,8 @@ class INMsItem extends BaseModel
             itemname = :itemname, 
             partno = :partno,
             note = :note,
-            userprice = :hargauser,
-            minimumstok = :minimumstok, 
+            userprice = :userprice,
+            dealerprice = :dealerprice, 
             upddate = getdate(), 
             upduser = :upduser 
             WHERE itemid = :itemid',
@@ -138,8 +122,8 @@ class INMsItem extends BaseModel
                 'itemname' => $param['itemname'],
                 'partno' => $param['partno'],
                 'note' => $param['note'],
-                'hargauser' => $param['hargauser'],
-                'minimumstok' => $param['minimumstok'],
+                'userprice' => $param['userprice'],
+                'dealerprice' => $param['dealerprice'],
                 'upduser' => $param['upduser']
             ]
         );

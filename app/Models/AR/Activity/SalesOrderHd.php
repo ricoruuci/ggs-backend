@@ -244,13 +244,8 @@ class SalesOrderHd extends BaseModel
         return $result;
     }
 
-    function getListOto($param)
+    function getListOto()
     {
-        if ($param['sortby'] == 'new') {
-            $order = 'DESC';
-        } else {
-            $order = 'ASC';
-        }
 
         $result = DB::select(
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
@@ -275,23 +270,21 @@ class SalesOrderHd extends BaseModel
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
             left join armssales d on a.warehouseid=d.salesid
-            where convert(varchar(10),a.transdate,112) between :dari and :sampai  
-            and A.Jenis NOT IN ('Y','X','T')  
-            and isnull(a.custid,'') like :custidkeyword
-            and isnull(b.custname,'') like :custnamekeyword
-            and isnull(a.salesid,'') like :salesidkeyword
-            and isnull(c.salesname,'') like :salesnamekeyword 
-            and a.poid like :sokeyword
-            ORDER BY a.transdate $order,A.POID",
-            [
-                'dari' => $param['dari'],
-                'sampai' => $param['sampai'],
-                'custidkeyword' => '%' . $param['custidkeyword'] . '%',
-                'custnamekeyword' => '%' . $param['custnamekeyword'] . '%',
-                'salesidkeyword' => '%' . $param['salesidkeyword'] . '%',
-                'salesnamekeyword' => '%' . $param['salesnamekeyword'] . '%',
-                'sokeyword' => '%' . $param['sokeyword'] . '%'
-            ]
+            where A.Jenis NOT IN ('Y','X','T')  
+            -- and isnull(a.custid,'') like :custidkeyword
+            -- and isnull(b.custname,'') like :custnamekeyword
+            -- and isnull(a.salesid,'') like :salesidkeyword
+            -- and isnull(c.salesname,'') like :salesnamekeyword 
+            -- and a.poid like :sokeyword
+            ORDER BY a.transdate ,A.POID"
+            // --,
+            // -- [
+            // --     'custidkeyword' => '%' . $param['custidkeyword'] . '%',
+            // --     'custnamekeyword' => '%' . $param['custnamekeyword'] . '%',
+            // --     'salesidkeyword' => '%' . $param['salesidkeyword'] . '%',
+            // --     'salesnamekeyword' => '%' . $param['salesnamekeyword'] . '%',
+            // --     'sokeyword' => '%' . $param['sokeyword'] . '%'
+            // -- ]
         );
 
         return $result;

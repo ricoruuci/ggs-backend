@@ -40,7 +40,7 @@ class ItemController extends Controller
                     'satuan' => $request->input('satuan'),
                     'note' => $request->input('note'),
                     'userprice' => $request->input('userprice'),
-                    'minimumstok' => $request->input('minimumstok'),
+                    'dealerprice' => $request->input('dealerprice'),
                     'upduser' => Auth::user()->currentAccessToken()['namauser']
                 ]);
 
@@ -112,8 +112,8 @@ class ItemController extends Controller
                     'itemname' => $request->input('itemname'),
                     'partno' => $request->input('partno'),
                     'note' => $request->input('note'),
-                    'hargauser' => $request->input('hargauser'),
-                    'minimumstok' => $request->input('minimumstok'),
+                    'userprice' => $request->input('userprice'),
+                    'dealerprice' => $request->input('dealerprice'),
                     'upduser' => Auth::user()->currentAccessToken()['namauser']
                 ]);
 
@@ -167,18 +167,5 @@ class ItemController extends Controller
 
             return $this->responseError($e->getMessage(), 400);
         }
-    }
-
-    public function getListBarangSO(Request $request)
-    {
-        $barang = new INMsItem();
-
-        $result = $barang->getListBarangSO([
-            'soid' => $request->input('soid')
-        ]);
-
-        $resultPaginated = $this->arrayPaginator($request, $result);
-
-        return $this->responsePagination($resultPaginated);
     }
 }

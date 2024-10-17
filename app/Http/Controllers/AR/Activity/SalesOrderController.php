@@ -335,45 +335,56 @@ class SalesOrderController extends Controller
 
             return $this->responseData($result);
         } else {
-            $result = $sales->getListData(
-                [
-                    'dari' => $request->input('dari'),
-                    'sampai' => $request->input('sampai'),
-                    'custidkeyword' => $request->input('custidkeyword') ?? '',
-                    'custnamekeyword' => $request->input('custnamekeyword') ?? '',
-                    'salesidkeyword' => $request->input('salesidkeyword') ?? '',
-                    'salesnamekeyword' => $request->input('salesnamekeyword') ?? '',
-                    'sokeyword' => $request->input('sokeyword') ?? '',
-                    'sortby' => $request->input('sortby') ?? 'old'
-                ]
-            );
+            if ($request->input('oto')) {
 
-            $resultPaginated = $this->arrayPaginator($request, $result);
+                $result = $sales->getListOto();
 
-            return $this->responsePagination($resultPaginated);
+                $resultPaginated = $this->arrayPaginator($request, $result);
+
+                return $this->responsePagination($resultPaginated);
+            } else {
+                $result = $sales->getListData(
+                    [
+                        'dari' => $request->input('dari'),
+                        'sampai' => $request->input('sampai'),
+                        'custidkeyword' => $request->input('custidkeyword') ?? '',
+                        'custnamekeyword' => $request->input('custnamekeyword') ?? '',
+                        'salesidkeyword' => $request->input('salesidkeyword') ?? '',
+                        'salesnamekeyword' => $request->input('salesnamekeyword') ?? '',
+                        'sokeyword' => $request->input('sokeyword') ?? '',
+                        'sortby' => $request->input('sortby') ?? 'old'
+                    ]
+                );
+
+                $resultPaginated = $this->arrayPaginator($request, $result);
+
+                return $this->responsePagination($resultPaginated);
+            }
         }
     }
 
 
-    public function getListOto(Request $request)
-    {
-        $sales = new SalesOrderHd();
 
-        $result = $sales->getListOto([
-            'dari' => $request->input('dari'),
-            'sampai' => $request->input('sampai'),
-            'custidkeyword' => $request->input('custidkeyword') ?? '',
-            'custnamekeyword' => $request->input('custnamekeyword') ?? '',
-            'salesidkeyword' => $request->input('salesidkeyword') ?? '',
-            'salesnamekeyword' => $request->input('salesnamekeyword') ?? '',
-            'sokeyword' => $request->input('sokeyword') ?? '',
-            'sortby' => $request->input('sortby') ?? 'old'
-        ]);
 
-        $resultPaginated = $this->arrayPaginator($request, $result);
+    // public function getListOto(Request $request)
+    // {
+    //     $sales = new SalesOrderHd();
 
-        return $this->responsePagination($resultPaginated);
-    }
+    //     $result = $sales->getListOto([
+    //         'dari' => $request->input('dari'),
+    //         'sampai' => $request->input('sampai'),
+    //         'custidkeyword' => $request->input('custidkeyword') ?? '',
+    //         'custnamekeyword' => $request->input('custnamekeyword') ?? '',
+    //         'salesidkeyword' => $request->input('salesidkeyword') ?? '',
+    //         'salesnamekeyword' => $request->input('salesnamekeyword') ?? '',
+    //         'sokeyword' => $request->input('sokeyword') ?? '',
+    //         'sortby' => $request->input('sortby') ?? 'old'
+    //     ]);
+
+    //     $resultPaginated = $this->arrayPaginator($request, $result);
+
+    //     return $this->responsePagination($resultPaginated);
+    // }
 
     public function getListSOBlmPO(Request $request)
     {
@@ -381,6 +392,19 @@ class SalesOrderController extends Controller
 
         $result = $sales->getListSOBlmPO([
             'transdate' => $request->input('transdate')
+        ]);
+
+        $resultPaginated = $this->arrayPaginator($request, $result);
+
+        return $this->responsePagination($resultPaginated);
+    }
+
+    public function getListBarangSO(Request $request)
+    {
+        $sales = new SalesOrderDt();
+
+        $result = $sales->getListBarangSO([
+            'soid' => $request->input('soid')
         ]);
 
         $resultPaginated = $this->arrayPaginator($request, $result);

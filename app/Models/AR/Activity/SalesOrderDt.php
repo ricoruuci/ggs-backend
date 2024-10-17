@@ -15,7 +15,7 @@ class SalesOrderDt extends Model
     protected $table = 'artrpurchaseorderdt';
 
     public $timestamps = false;
-    
+
     public static $rulesInsert = [
         'detail.*.itemid' => 'required',
         'detail.*.qty' => 'required',
@@ -39,8 +39,8 @@ class SalesOrderDt extends Model
             "INSERT INTO artrpurchaseorderdt
             (poid,urut,itemid,qty,price,upddate,upduser,itemname,modal,bagasi,keterangan) 
             VALUES 
-            (:soid,:urut,:itemid,:qty,:price,getdate(),:upduser,:itemname,:modal,0,:note)", 
-             
+            (:soid,:urut,:itemid,:qty,:price,getdate(),:upduser,:itemname,:modal,0,:note)",
+
             [
                 'soid' => $param['soid'],
                 'itemid' => $param['itemid'],
@@ -52,7 +52,7 @@ class SalesOrderDt extends Model
                 'modal' => $param['modal'],
                 'note' => $param['note']
             ]
-        );     
+        );
 
         return $result;
     }
@@ -71,7 +71,25 @@ class SalesOrderDt extends Model
         return $result;
     }
 
-    
+    function getListBarangSO($param)
+    {
+        $result = DB::select(
+            "SELECT k.itemid,l.itemname,k.price,k.keterangan,k.qty-k.jumpo as qty,l.uomid from (
+            select a.poid,isnull(a.modal,0) as price,isnull(a.qty,0) as qty,a.itemid,isnull(a.keterangan,'') as keterangan,
+            isnull((select sum(x.qty) from artrpenawarandt x 
+            inner join artrpenawaranhd y on x.gbuid=y.gbuid and y.flag='b' where y.soid=a.poid and x.itemid=a.itemid),0) as jumpo 
+            from artrpurchaseorderdt a
+            ) as k inner join inmsitem l on k.itemid=l.itemid 
+            where k.poid=:soid ",
+            [
+                "soid" => $param['soid']
+            ]
+        );
+
+        return $result;
+    }
+
+
     function deleteData($param)
     {
 
@@ -85,5 +103,3 @@ class SalesOrderDt extends Model
         return $result;
     }
 }
-
-?>
