@@ -168,14 +168,20 @@ class SalesOrderHd extends BaseModel
             inner join armssales c on a.salesid=c.salesid
             left join armssales d on a.warehouseid=d.salesid
             where convert(varchar(10),a.transdate,112) between :dari and :sampai 
-            and isnull(a.custid,'') like :custid and isnull(a.salesid,'') like :salesid and a.poid like :keyword
+            and isnull(a.custid,'') like :custidkeyword
+            and isnull(b.custname,'') like :custnamekeyword
+            and isnull(a.salesid,'') like :salesidkeyword
+            and isnull(c.salesname,'') like :salesnamekeyword 
+            and a.poid like :sokeyword
             order by a.transdate $order",
             [
                 'dari' => $param['dari'],
                 'sampai' => $param['sampai'],
-                'custid' => '%' . $param['custid'] . '%',
-                'salesid' => '%' . $param['salesid'] . '%',
-                'keyword' => '%' . $param['keyword'] . '%',
+                'custidkeyword' => '%' . $param['custidkeyword'] . '%',
+                'custnamekeyword' => '%' . $param['custnamekeyword'] . '%',
+                'salesidkeyword' => '%' . $param['salesidkeyword'] . '%',
+                'salesnamekeyword' => '%' . $param['salesnamekeyword'] . '%',
+                'sokeyword' => '%' . $param['sokeyword'] . '%'
             ]
         );
 
@@ -238,8 +244,14 @@ class SalesOrderHd extends BaseModel
         return $result;
     }
 
-    function getListOto()
+    function getListOto($param)
     {
+        if ($param['sortby'] == 'new') {
+            $order = 'DESC';
+        } else {
+            $order = 'ASC';
+        }
+
         $result = DB::select(
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
@@ -263,8 +275,23 @@ class SalesOrderHd extends BaseModel
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
             left join armssales d on a.warehouseid=d.salesid
-            WHERE A.Jenis NOT IN ('Y','X','T')  
-            ORDER BY CONVERT(VARCHAR(8),A.Transdate,112),A.POID"
+            where convert(varchar(10),a.transdate,112) between :dari and :sampai  
+            and A.Jenis NOT IN ('Y','X','T')  
+            and isnull(a.custid,'') like :custidkeyword
+            and isnull(b.custname,'') like :custnamekeyword
+            and isnull(a.salesid,'') like :salesidkeyword
+            and isnull(c.salesname,'') like :salesnamekeyword 
+            and a.poid like :sokeyword
+            ORDER BY a.transdate $order,A.POID",
+            [
+                'dari' => $param['dari'],
+                'sampai' => $param['sampai'],
+                'custidkeyword' => '%' . $param['custidkeyword'] . '%',
+                'custnamekeyword' => '%' . $param['custnamekeyword'] . '%',
+                'salesidkeyword' => '%' . $param['salesidkeyword'] . '%',
+                'salesnamekeyword' => '%' . $param['salesnamekeyword'] . '%',
+                'sokeyword' => '%' . $param['sokeyword'] . '%'
+            ]
         );
 
         return $result;

@@ -26,7 +26,7 @@ class CustomerController extends Controller
             return $this->responseError($validator->messages(), 400);
         } else {
 
-            $kodecust = $customer->beforeAutoNumber($request->input('tipe'));
+            $kodecust = $customer->beforeAutoNumber($request->input('custname'), $request->input('tipe'));
 
             DB::beginTransaction();
 

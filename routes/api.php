@@ -18,6 +18,7 @@ Route::get('sales', [SalesController::class, 'getListData'])->middleware('auth:s
 Route::post('sales', [SalesController::class, 'insertData'])->middleware('auth:sanctum');
 Route::patch('sales', [SalesController::class, 'updateAllData'])->middleware('auth:sanctum');
 Route::delete('sales', [SalesController::class, 'deleteData'])->middleware('auth:sanctum');
+
 //Master Customer
 Route::post('customer', [CustomerController::class, 'insertData'])->middleware('auth:sanctum');
 Route::get('customer', [CustomerController::class, 'getListData'])->middleware('auth:sanctum');
@@ -29,8 +30,9 @@ Route::post('salesorder', [SalesOrderController::class, 'insertData'])->middlewa
 Route::get('salesorder', [SalesOrderController::class, 'getListData'])->middleware('auth:sanctum');
 Route::patch('salesorder', [SalesOrderController::class, 'updateAllData'])->middleware('auth:sanctum');
 Route::delete('salesorder', [SalesOrderController::class, 'deleteData'])->middleware('auth:sanctum');
-Route::patch('otorisasiso', [SalesOrderController::class, 'updateJenis'])->middleware('auth:sanctum');
+Route::patch('salesorder/otorisasi', [SalesOrderController::class, 'updateJenis'])->middleware('auth:sanctum');
 Route::get('listsoblmpo', [SalesOrderController::class, 'getListSOBlmPO'])->middleware('auth:sanctum');
+Route::get('salesorder/otorisasi', [SalesOrderController::class, 'getListOto'])->middleware('auth:sanctum');
 
 //Master Barang
 Route::get('item', [ItemController::class, 'getListData'])->middleware('auth:sanctum');

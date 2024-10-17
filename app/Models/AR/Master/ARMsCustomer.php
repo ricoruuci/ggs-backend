@@ -180,12 +180,12 @@ class ARMsCustomer extends BaseModel
         return $result;
     }
 
-    public function beforeAutoNumber($custname)
+    public function beforeAutoNumber($custname,$tipe)
     {
 
         $nama = substr($custname, 0, 1);
 
-        $autoNumber = $this->autoNumber($this->table, 'custid', $nama, '000');
+        $autoNumber = $this->autoNumber($this->table, 'custid', $tipe . $nama, '000');
 
         return $autoNumber;
     }
