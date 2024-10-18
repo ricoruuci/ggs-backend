@@ -149,8 +149,8 @@ class SalesOrderHd extends BaseModel
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
-            a.stso as subtotal,a.ppn as ppn,
-            a.ttlso as grandtotal,a.ttlso,
+            isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
+            isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
             isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
             CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
@@ -194,8 +194,8 @@ class SalesOrderHd extends BaseModel
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
-            a.stso as subtotal,a.ppn as ppn,
-            a.ttlso as grandtotal,a.ttlso,
+            isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
+            isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
             isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
             CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
@@ -251,8 +251,8 @@ class SalesOrderHd extends BaseModel
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
-            a.stso as subtotal,a.ppn as ppn,
-            a.ttlso as grandtotal,a.ttlso,
+            isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
+            isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
             isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
             CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
@@ -271,20 +271,7 @@ class SalesOrderHd extends BaseModel
             inner join armssales c on a.salesid=c.salesid
             left join armssales d on a.warehouseid=d.salesid
             where A.Jenis NOT IN ('Y','X','T')  
-            -- and isnull(a.custid,'') like :custidkeyword
-            -- and isnull(b.custname,'') like :custnamekeyword
-            -- and isnull(a.salesid,'') like :salesidkeyword
-            -- and isnull(c.salesname,'') like :salesnamekeyword 
-            -- and a.poid like :sokeyword
             ORDER BY a.transdate ,A.POID"
-            // --,
-            // -- [
-            // --     'custidkeyword' => '%' . $param['custidkeyword'] . '%',
-            // --     'custnamekeyword' => '%' . $param['custnamekeyword'] . '%',
-            // --     'salesidkeyword' => '%' . $param['salesidkeyword'] . '%',
-            // --     'salesnamekeyword' => '%' . $param['salesnamekeyword'] . '%',
-            // --     'sokeyword' => '%' . $param['sokeyword'] . '%'
-            // -- ]
         );
 
         return $result;
