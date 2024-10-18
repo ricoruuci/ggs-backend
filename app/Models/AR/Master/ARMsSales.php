@@ -40,10 +40,10 @@ class ARMsSales extends BaseModel
         $result = DB::insert(
             "INSERT INTO armssales
             (salesid,salesname,address,phone,hp,email,note,upddate,upduser,jabatan,uangmakan,uangbulanan,fgactive,tglgabung,limitkasbon,kerajinan,
-            tomzet,kom1,kom2,kom3,kom4,foto,sas)
+            tomzet,kom1,kom2,kom3,kom4)
             VALUES
             (:salesid,:salesname,:address,:telp,:hp,:email,:note,getdate(),:upduser,:jabatan,0,0,:fgactive,:tglgabung,0,0,
-            :tomzet,:kom1,:kom2,:kom3,:kom4,:foto1,:foto2)",
+            :tomzet,:kom1,:kom2,:kom3,:kom4)",
             [
                 'salesid' => $param['salesid'],
                 'salesname' => $param['salesname'],
@@ -56,8 +56,6 @@ class ARMsSales extends BaseModel
                 'jabatan' => $param['jabatan'],
                 'fgactive' => $param['fgactive'],
                 'tglgabung' => $param['tglgabung'],
-                'foto1' => $param['foto1'],
-                'foto2' => $param['foto2'],
                 'tomzet' => $param['tomzet'],
                 'kom1' => $param['kom1'],
                 'kom2' => $param['kom2'],
@@ -84,8 +82,6 @@ class ARMsSales extends BaseModel
             jabatan = :jabatan,
             fgactive =:fgactive,
             tglgabung = :tglgabung,
-            foto = :foto1,
-            sas = :foto2,
             tomzet = :tomzet,
             kom1 = :kom1,
             kom2 = :kom2,
@@ -105,8 +101,6 @@ class ARMsSales extends BaseModel
                 'jabatan' => $param['jabatan'],
                 'fgactive' => $param['fgactive'],
                 'tglgabung' => $param['tglgabung'],
-                'foto1' => $param['foto1'],
-                'foto2' => $param['foto2'],
                 'tomzet' => $param['tomzet'],
                 'kom1' => $param['kom1'],
                 'kom2' => $param['kom2'],
@@ -137,7 +131,7 @@ class ARMsSales extends BaseModel
         $result = DB::select(
             "SELECT a.salesid,a.salesname,a.address,a.phone as telp,a.hp,a.email,a.jabatan,a.tglgabung,
             a.upddate,a.upduser,a.note,a.fgactive,
-            case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,a.foto as foto1,a.sas as foto2,
+            case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,
             a.kom1,a.kom2,a.kom3,a.kom4,a.tomzet
             from armssales a
             where a.salesid like :salesidkeyword and a.salesname like :salesnamekeyword
@@ -157,7 +151,7 @@ class ARMsSales extends BaseModel
         $result = DB::selectOne(
             "SELECT a.salesid,a.salesname,a.address,a.phone as telp,a.hp,a.email,a.jabatan,a.tglgabung,
             a.upddate,a.upduser,a.note,a.fgactive,
-            case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,a.foto as foto1,a.sas as foto2,
+            case when a.fgactive=0 then 'TIDAK' when a.fgactive=1 then 'YA' else 'ISIDENTIL' end as statusactive,
             a.kom1,a.kom2,a.kom3,a.kom4,a.tomzet
             from armssales a where a.salesid=:salesid",
             [
