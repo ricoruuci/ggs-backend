@@ -3,6 +3,7 @@
 use App\Http\Controllers\AR\Activity\SalesOrderController;
 use App\Http\Controllers\AR\Master\CustomerController;
 use App\Http\Controllers\AR\Master\SalesController;
+use App\Http\Controllers\AR\Report\RekapSOController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IN\Master\ItemController;
 use Illuminate\Http\Request;
@@ -34,6 +35,9 @@ Route::get('salesorder/item', [SalesOrderController::class, 'getListBarangSO'])-
 Route::get('listsoblmpo', [SalesOrderController::class, 'getListSOBlmPO'])->middleware('auth:sanctum');
 Route::patch('salesorder/otorisasi', [SalesOrderController::class, 'updateJenis'])->middleware('auth:sanctum');
 // Route::get('salesorder/otorisasi', [SalesOrderController::class, 'getListOto'])->middleware('auth:sanctum');
+
+//Laporan Sales Order
+Route::get('rekapso', [RekapSOController::class, 'getRekapSO'])->middleware('auth:sanctum');
 
 
 //Master Barang
