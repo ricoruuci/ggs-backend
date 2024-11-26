@@ -156,13 +156,13 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
             WHEN A.Jenis='Y' THEN 'APPROVED'
             WHEN A.Jenis='X' THEN 'REJECTED'
-            WHEN A.Jenis='D' THEN 'OVERDUE'
+            WHEN A.Jenis='O' THEN 'OVERDUE'
             WHEN A.Jenis='W' THEN 'WAITING APPROVAL ONLY'
-            WHEN A.Jenis='R' THEN 'JUAL RUGI'
-            WHEN A.Jenis='RD' THEN 'JUAL RUGI & OVERDUE'
-            WHEN A.Jenis='RL' THEN 'JUAL RUGI & OVERLIMIT'
-            WHEN A.Jenis='DL' THEN 'OVERDUE & OVERLIMIT'
-            WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,a.upddate,a.upduser
+            WHEN A.Jenis='G' THEN 'JUAL RUGI'
+            WHEN A.Jenis='OG' THEN 'JUAL RUGI & OVERDUE'
+            WHEN A.Jenis='GL' THEN 'JUAL RUGI & OVERLIMIT'
+            WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
+            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
@@ -201,13 +201,13 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
             WHEN A.Jenis='Y' THEN 'APPROVED'
             WHEN A.Jenis='X' THEN 'REJECTED'
-            WHEN A.Jenis='D' THEN 'OVERDUE'
+            WHEN A.Jenis='O' THEN 'OVERDUE'
             WHEN A.Jenis='W' THEN 'WAITING APPROVAL ONLY'
-            WHEN A.Jenis='R' THEN 'JUAL RUGI'
-            WHEN A.Jenis='RD' THEN 'JUAL RUGI & OVERDUE'
-            WHEN A.Jenis='RL' THEN 'JUAL RUGI & OVERLIMIT'
-            WHEN A.Jenis='DL' THEN 'OVERDUE & OVERLIMIT'
-            WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,
+            WHEN A.Jenis='G' THEN 'JUAL RUGI'
+            WHEN A.Jenis='OG' THEN 'JUAL RUGI & OVERDUE'
+            WHEN A.Jenis='GL' THEN 'JUAL RUGI & OVERLIMIT'
+            WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
+            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,
             a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
@@ -258,13 +258,13 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
             WHEN A.Jenis='Y' THEN 'APPROVED'
             WHEN A.Jenis='X' THEN 'REJECTED'
-            WHEN A.Jenis='D' THEN 'OVERDUE'
+            WHEN A.Jenis='O' THEN 'OVERDUE'
             WHEN A.Jenis='W' THEN 'WAITING APPROVAL ONLY'
-            WHEN A.Jenis='R' THEN 'JUAL RUGI'
-            WHEN A.Jenis='RD' THEN 'JUAL RUGI & OVERDUE'
-            WHEN A.Jenis='RL' THEN 'JUAL RUGI & OVERLIMIT'
-            WHEN A.Jenis='DL' THEN 'OVERDUE & OVERLIMIT'
-            WHEN A.Jenis='RDL' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,
+            WHEN A.Jenis='G' THEN 'JUAL RUGI'
+            WHEN A.Jenis='OG' THEN 'JUAL RUGI & OVERDUE'
+            WHEN A.Jenis='GL' THEN 'JUAL RUGI & OVERLIMIT'
+            WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
+            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,
             a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
@@ -302,24 +302,9 @@ class SalesOrderHd extends BaseModel
 
     function cekOtorisasi($param)
     {
-
-        $cekrugi = DB::selectOne(
-            "SELECT case when isnull(sum(a.qty*(a.price-a.modal)),0) < 0 then 'R' else '' end as flag 
-            from artrpurchaseorderdt a where poid=:soid ",
-            [
-                'soid' => $param['soid']
-            ]
-        );
-
-        if (is_null($cekrugi)) {
-            $a = '';
-        } else {
-            $a = $cekrugi->flag;
-        }
-
         $cekoverdue = DB::selectOne(
             "SELECT case when sum(case when convert(varchar(8),dateadd(day,k.term,k.transdate),112) >= :transdate
-            then 0 else 1 end) > 0 then 'D' else '' end as flag from (
+            then 0 else 1 end) > 0 then 'O' else '' end as flag from (
             select a.transdate,isnull(b.hterm,0) as term,a.custid,isnull(a.ttlpj,0) as total,
             isnull((select isnull(sum(x.valuepayment),0) from artrpiutangdt x inner join artrpiutanghd y on x.piutangid=y.piutangid 
             where x.saleid=a.saleid and y.custid=a.custid 
@@ -336,11 +321,10 @@ class SalesOrderHd extends BaseModel
         );
 
         if (is_null($cekoverdue)) {
-            $b = '';
+            $a = '';
         } else {
-            $b = $cekoverdue->flag;
+            $a = $cekoverdue->flag;
         }
-
         $ceklimit = DB::selectOne(
             "SELECT case when isnull(h.limitpiutang,0)-isnull(sum(l.piutang),0)-
             isnull((select m.ttlso from artrpurchaseorderhd m where m.poid=:soid),0) < 0 then 'L' else '' end as flag
@@ -359,10 +343,29 @@ class SalesOrderHd extends BaseModel
             ]
         );
 
+        
+
         if (is_null($ceklimit)) {
+            $b = '';
+        } else {
+            $b = $ceklimit->flag;
+        }
+
+        
+
+        
+        $cekrugi = DB::selectOne(
+            "SELECT case when isnull(sum(a.qty*(a.price-a.modal)),0) < 0 then 'G' else '' end as flag 
+            from artrpurchaseorderdt a where poid=:soid ",
+            [
+                'soid' => $param['soid']
+            ]
+        );
+
+        if (is_null($cekrugi)) {
             $c = '';
         } else {
-            $c = $ceklimit->flag;
+            $c = $cekrugi->flag;
         }
 
         $result = $a . $b . $c;
