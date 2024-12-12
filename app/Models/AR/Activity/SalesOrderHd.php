@@ -343,7 +343,7 @@ class SalesOrderHd extends BaseModel
             ]
         );
 
-        
+
 
         if (is_null($ceklimit)) {
             $b = '';
@@ -351,9 +351,9 @@ class SalesOrderHd extends BaseModel
             $b = $ceklimit->flag;
         }
 
-        
 
-        
+
+
         $cekrugi = DB::selectOne(
             "SELECT case when isnull(sum(a.qty*(a.price-a.modal)),0) < 0 then 'G' else '' end as flag 
             from artrpurchaseorderdt a where poid=:soid ",
@@ -454,6 +454,46 @@ class SalesOrderHd extends BaseModel
                 'soid' => $soid
             ]
         );
+
+        return $result;
+    }
+
+    function cekOtoLevel($userid)
+    {
+        $cek = DB::selectOne(
+            "SELECT userid,isnull(fglevel,'T') as fglevel from sysmsuser where userid=:userid ",
+            [
+                'userid' => $userid
+            ]
+        );
+
+        if ($cek->fglevel == 'Y') {
+            $result = true;
+        } else {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    function cekMargin($soid)
+    {
+        $cek = DB::selectOne(
+            "SELECT  case when sum(qty*modal) = 0 then 100 else ((sum(qty*(price-modal))-(sum(qty*price)*isnull(a.disc,0)/100)-a.tbagasi)/sum(qty*modal)*100) end as pmargin
+	        from artrpurchaseorderhd a inner join artrpurchaseorderdt b 
+            on a.poid=b.poid 
+            where a.poid=:soid
+            group by a.fgkomisi,a.fgtax,a.tbagasi,a.svc,a.disc ",
+            [
+                'soid' => $soid
+            ]
+        );
+
+        if ($cek && $cek->pmargin < 2.5) {
+            $result = true;
+        } else {
+            $result = false;
+        }
 
         return $result;
     }

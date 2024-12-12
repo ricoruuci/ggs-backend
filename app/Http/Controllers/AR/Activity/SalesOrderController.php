@@ -457,6 +457,18 @@ class SalesOrderController extends Controller
     {
         $sales = new SalesOrderHd();
 
+        $cekpmargin = $sales->cekMargin($request->input('soid'));
+
+        if ($cekpmargin == true) {
+
+            $cek = $sales->cekOtoLevel(Auth::user()->currentAccessToken()['namauser']);
+
+            if ($cek == false) {
+
+                return $this->responseError('Anda tidak memiliki akses untuk otorisasi SO ini', 400);
+            }
+        }
+
         $cek = $sales->cekSalesorder($request->input('soid'));
 
         if ($cek == false) {
