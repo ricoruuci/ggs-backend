@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AP\Master\SupplierController;
+use App\Http\Controllers\AR\Activity\PenjualanController;
 use App\Http\Controllers\AR\Activity\SalesOrderController;
 use App\Http\Controllers\AR\Master\CustomerController;
 use App\Http\Controllers\AR\Master\SalesController;
@@ -13,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::patch('changepass', [AuthController::class, 'changePass'])->middleware('auth:sanctum');
+
+//Master Supplier
+Route::post('supplier', [SupplierController::class, 'insertData'])->middleware('auth:sanctum');
+Route::get('supplier', [SupplierController::class, 'getListData'])->middleware('auth:sanctum');
+Route::patch('supplier', [SupplierController::class, 'updateAllData'])->middleware('auth:sanctum');
+Route::delete('supplier', [SupplierController::class, 'deleteData'])->middleware('auth:sanctum');
 
 //Master Sales
 Route::get('sales', [SalesController::class, 'getListData'])->middleware('auth:sanctum');
@@ -35,6 +43,15 @@ Route::get('salesorder/item', [SalesOrderController::class, 'getListBarangSO'])-
 Route::get('listsoblmpo', [SalesOrderController::class, 'getListSOBlmPO'])->middleware('auth:sanctum');
 Route::patch('salesorder/otorisasi', [SalesOrderController::class, 'updateJenis'])->middleware('auth:sanctum');
 // Route::get('salesorder/otorisasi', [SalesOrderController::class, 'getListOto'])->middleware('auth:sanctum');
+
+Route::post('penjualan', [PenjualanController::class, 'insertData'])->middleware('auth:sanctum');
+Route::patch('penjualan', [PenjualanController::class, 'updateAllData'])->middleware('auth:sanctum');
+Route::delete('penjualan', [PenjualanController::class, 'deleteData'])->middleware('auth:sanctum');
+Route::get('penjualan', [PenjualanController::class, 'getListData'])->middleware('auth:sanctum');
+Route::get('penjualan/cari-so', [PenjualanController::class, 'cariSO'])->middleware('auth:sanctum');
+Route::get('penjualan/cari-detail', [PenjualanController::class, 'cariDetail'])->middleware('auth:sanctum');
+Route::get('penjualan/cari-sn', [PenjualanController::class, 'cariSN'])->middleware('auth:sanctum');
+Route::get('penjualan/cekbayar', [PenjualanController::class, 'cekBayar'])->middleware('auth:sanctum');
 
 //Laporan Sales Order
 Route::get('rekapso', [RekapSOController::class, 'getRekapSO'])->middleware('auth:sanctum');
