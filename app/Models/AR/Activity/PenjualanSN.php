@@ -59,7 +59,7 @@ class PenjualanSN extends Model
     function getData($param)
     {
         $result = DB::select(
-            'SELECT a.snid,a.saleid,a.itemid,b.itemname,a.price,a.modal,a.purchaseid,a.upddate,a.upduser from ARTrPenjualansn a
+            'SELECT a.snid,a.saleid,a.itemid,b.itemname,a.price,a.modal,a.purchaseid,a.upddate,a.upduser,a.fgsn from ARTrPenjualansn a
             inner join inmsitem b on a.itemid=b.itemid
             WHERE a.saleid = :saleid and a.itemid=:itemid ',
             [
@@ -89,16 +89,16 @@ class PenjualanSN extends Model
     function selectSN($param)
     {
         $result = DB::select(
-            "SELECT k.snid,k.purchaseid,k.transdate,k.suppid, k.suppname,k.purchaseid,k.price as modal
+            "SELECT k.snid,k.purchaseid,k.transdate,k.suppid, k.suppname,k.purchaseid,k.price as modal,k.fgsn
             from (
-            select a.snid, c.konsinyasiid as purchaseid, c.transdate, c.suppid, d.suppname, b.itemid, f.itemname, a.fgjual, b.price
+            select a.snid, c.konsinyasiid as purchaseid, c.transdate, c.suppid, d.suppname, b.itemid, f.itemname, a.fgjual, b.price,a.fgsn
             from aptrkonsinyasidtsn a
             inner join aptrkonsinyasidt b on a.konsinyasiid=b.konsinyasiid and a.itemid=b.itemid
             inner join aptrkonsinyasihd c on b.konsinyasiid=c.konsinyasiid
             inner join apmssupplier d on c.suppid=d.suppid
             inner join inmsitem f on f.itemid=b.itemid
             ) as k
-            where k.itemid=:itemid and k.fgjual='t'
+            where k.itemid=:itemid and k.fgjual='T'
             and k.suppid like :suppidkeyword
             and k.suppname like :suppnamekeyword
             and k.purchaseid like :purchaseidkeyword

@@ -64,22 +64,26 @@ class PenjualanHd extends BaseModel
         $result = DB::insert(
             "INSERT INTO artrpenjualanhd (saleid,soid,poid,transdate,custid,salesid,note,jatuhtempo,discount,currid,upddate,upduser,dp,flagcounter,rate,
             charge,nama,kasir,fgtax,ppnfee,alamat,administrasi,fglunas,fgtrans,fgupload,taxid,actor,fgform,nilaitax,alamatkirim)
-            VALUES (:saleid,:soid,:poid,:transdate,:custid,:salesid,:note,:jatuhtempo,:discount,'IDR',getdate(),:upduser,'0','L',1,
-            0,'',:kasir,:fgtax,0,:alamat,0,'B','B','T',:taxid,:atasnama)",
+            VALUES (:saleid,:soid,:poid,:transdate,:custid,:salesid,:note,:term,:discount,'IDR',getdate(),:upduser,:dp,'L',1,
+            0,'',:kasir,:fgtax,0,:alamat,0,'B','B','T',:taxid,:nama,'AR',:nilaitax,:alamatkirim)",
             [
                 'saleid' => $param['saleid'],
                 'soid' => $param['soid'],
+                'poid' => $param['poid'],
                 'transdate' => $param['transdate'],
                 'custid' => $param['custid'],
                 'salesid' => $param['salesid'],
-                'jatuhtempo' => $param['jatuhtempo'],
-                'discount' => $param['discamount'],
+                'note' => $param['note'],
+                'term' => $param['term'],
+                'discount' => $param['discount'],
+                'dp' => $param['dp'],
                 'upduser' => $param['upduser'],
                 'nama' => $param['nama'],
                 'kasir' => $param['upduser'],
                 'fgtax' => $param['fgtax'],
-                'ppnfee' => $param['nilaitax'],
+                'nilaitax' => $param['nilaitax'],
                 'alamat' => $param['alamat'],
+                'alamatkirim' => $param['alamatkirim']
             ]
         );
 
@@ -92,17 +96,21 @@ class PenjualanHd extends BaseModel
             'UPDATE artrpenjualanhd SET
             transdate = :transdate,
             soid = :soid,
+            poid = :poid,
             custid = :custid,
             salesid = :salesid,
-            jatuhtempo = :jatuhtempo,
+            jatuhtempo = :term,
             discount = :discount,
             nama = :nama,
             kasir = :kasir,
             upddate = getdate(),
             upduser = :upduser,
             fgtax = :fgtax,
-            ppnfee = :nilaitax,
-            alamat = :alamat
+            nilaitax = :nilaitax,
+            alamat = :alamat,
+            dp = :dp,
+            alamatkirim = :alamatkirim
+            
             WHERE saleid = :saleid',
             [
                 'saleid' => $param['saleid'],
@@ -110,14 +118,16 @@ class PenjualanHd extends BaseModel
                 'soid' => $param['soid'],
                 'custid' => $param['custid'],
                 'salesid' => $param['salesid'],
-                'jatuhtempo' => $param['jatuhtempo'],
+                'term' => $param['term'],
                 'discount' => $param['discamount'],
                 'nama' => $param['nama'],
                 'kasir' => $param['upduser'],
                 'upduser' => $param['upduser'],
                 'fgtax' => $param['fgtax'],
                 'nilaitax' => $param['nilaitax'],
-                'alamat' => $param['alamat']
+                'alamat' => $param['alamat'],
+                'alamatkirim' => $param['alamatkirim'] ,
+                'dp' => $param['dp']          
             ]
         );
 
@@ -281,7 +291,7 @@ class PenjualanHd extends BaseModel
         return $result;
     }
 
-    function insertAllLog($param)
+  function insertAllLog($param)
     {
         $result = DB::insert(
             "INSERT INTO AllPenjualan (saleid,salesid,soid,itemid,price,qty,upddate,upduser,custid,discount,currid,transdate,dp,nama,administrasi) 

@@ -42,18 +42,21 @@ class PenjualanDt extends Model
 
         $result = DB::insert(
             "INSERT INTO ARTrPenjualanDt
-            (saleid,itemid,price,warehouseid,qty,upduser,upddate,note,flagretur,komisi)
+            (saleid,itemid,price,warehouseid,qty,upduser,upddate,note,note2,flagretur,komisi,uomid,modal)
             VALUES
-            (:saleid,:itemid,:price,'01GU',:qty,:upduser,getdate(),:note,'T',:bagasi)",
+            (:saleid,:itemid,:price,'01GU',:qty,:upduser,getdate(),:itemname,:note,'T',:titipan,:uomid,:modal)",
 
             [
                 'saleid' => $param['saleid'],
                 'itemid' => $param['itemid'],
                 'price' => $param['price'],
                 'qty' => $param['qty'],
+                'uomid' => $param['uomid'],
                 'upduser' => $param['upduser'],
                 'note' => $param['note'],
-                'bagasi' => $param['bagasi']
+                'itemname' => $param['itemname'],
+                'titipan' => $param['titipan'],
+                'modal' => $param['modal']
             ]
         );
 
@@ -66,7 +69,7 @@ class PenjualanDt extends Model
         $detailsn = new PenjualanSN();
 
         $result = DB::select(
-            "SELECT a.saleid,a.itemid,b.itemname,a.qty,a.price,a.komisi as bagasi,a.qty*a.price as total,a.note,a.upduser,a.upddate
+            "SELECT a.saleid,a.itemid,b.itemname,a.qty,a.uomid,a.price,isnull(a.komisi,0) as titipan,a.qty*a.price as total,isnull(a.note2,'') as note,a.upduser,a.upddate
             from artrpenjualandt a
             inner join inmsitem b on a.itemid=b.itemid
             where a.saleid = :saleid ",
@@ -105,15 +108,15 @@ class PenjualanDt extends Model
     function cariDetailBarangBaru($param)
     {
         $result = DB::select(
-            "SELECT l.itemid,l.itemname,isnull(k.qty-k.invoice,0) as qty,k.price,l.uomid as uomid,k.bagasi,isnull((k.qty-k.invoice)*k.price,0) as total,k.Keterangan as note
+            "SELECT l.itemid,l.itemname,isnull(k.invoice,0) as qtyinvoice,isnull(k.qty-k.invoice,0) as qty,k.price,l.uomid as uomid,k.bagasi,isnull((k.qty-k.invoice)*k.price,0) as total,k.Keterangan as note
             from (
-            select a.poid,a.itemid,b.jenis,a.qty,isnull(b.fgclose,'t') as fgclose,
+            select a.poid,a.itemid,b.jenis,a.qty,
             isnull((select sum(x.qty) from artrpenjualandt x inner join artrpenjualanhd y on x.saleid=y.saleid
-            where y.soid=a.poid and x.itemid=a.itemid),0) as invoice,isnull(a.price,0) as Price,isnull(a.bagasi,0) as Bagasi,isnull(a.keterangan,'') as Keterangan
+            where y.soid=a.poid and x.itemid=a.itemid),0) as invoice,isnull(a.price,0) as Price,isnull(a.bagasi,0) as Bagasi,isnull(a.keterangan,'') as keterangan
             from artrpurchaseorderdt a inner join artrpurchaseorderhd b on a.poid=b.poid
             ) as k
             inner join inmsitem l on k.itemid=l.itemid
-            where k.jenis='y' and k.fgclose='t' and k.poid=:soid
+            where k.jenis='Y'  and k.poid=:soid
             AND l.itemname like :itemnamekeyword and k.itemid like :itemidkeyword",
             [
                 'soid' => $param['soid'],

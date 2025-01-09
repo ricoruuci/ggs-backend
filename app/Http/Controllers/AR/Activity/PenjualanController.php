@@ -77,20 +77,20 @@ class PenjualanController extends Controller
             $insertheader = $sales->insertData([
                 'saleid' => $hasilpoid,
                 'soid' => $request->input('soid'),
+                'poid' => $request->input('poid'),
                 'transdate' => $request->input('transdate'),
                 'custid' => $request->input('custid'),
                 'salesid' => $request->input('salesid'),
                 'jatuhtempo' => $request->input('term') ?? 30,
+                'note' => $request->input('note') ?? '',
                 'discamount' => $request->input('discamount') ?? 0,
                 'upduser' => Auth::user()->currentAccessToken()['namauser'],
                 'dp' => $request->input('dp') ?? 0,
-                'flagcounter' => $request->input('jenisid') ?? '',
-                'charge' => $request->input('charge') ?? '',
                 'nama' => $request->input('nama') ?? '',
                 'fgtax' => $request->input('fgtax') ?? 'T',
                 'nilaitax' => $request->input('nilaitax') ?? '',
                 'alamat' => $request->input('alamat') ?? '',
-                'administrasi' => $request->input('administrasi') ?? 0
+                'alamatkirim' => $request->input('alamatkirim') ?? ''
             ]);
 
             //dd(var_dump($insertheader));
@@ -131,11 +131,13 @@ class PenjualanController extends Controller
                 $insertdetail = $modelDetail->insertData([
                     'saleid' => $hasilpoid,
                     'itemid' => $arrDetail[$i]['itemid'],
+                    'itemname' => $arrDetail[$i]['itemname'],
                     'price' => $arrDetail[$i]['price'],
                     'qty' => $arrDetail[$i]['qty'],
-                    'bagasi' => $arrDetail[$i]['bagasi'],
+                    'titipan' => $arrDetail[$i]['titipan'],
                     'upduser' => Auth::user()->currentAccessToken()['namauser'],
-                    'note' => $arrDetail[$i]['note']
+                    'note' => $arrDetail[$i]['note'],
+                    'modal' => $arrDetail[$i]['modal']
                 ]);
 
                 if ($insertdetail == false) {
@@ -304,20 +306,20 @@ class PenjualanController extends Controller
             $insertheader = $sales->updateAllData([
                 'saleid' => $request->input('saleid'),
                 'soid' => $request->input('soid'),
+                'poid' => $request->input('poid'),
                 'transdate' => $request->input('transdate'),
                 'custid' => $request->input('custid'),
                 'salesid' => $request->input('salesid'),
-                'jatuhtempo' => $request->input('term') ?? 30,
+                'term' => $request->input('term') ?? 30,
                 'discamount' => $request->input('discamount') ?? 0,
                 'upduser' => Auth::user()->currentAccessToken()['namauser'],
                 'kasir' => Auth::user()->currentAccessToken()['namauser'],
                 'dp' => $request->input('dp') ?? 0,
-                'flagcounter' => $request->input('jenisid') ?? '',
                 'nama' => $request->input('nama') ?? '',
                 'fgtax' => $request->input('fgtax') ?? 'T',
                 'nilaitax' => $request->input('nilaitax') ?? '',
                 'alamat' => $request->input('alamat') ?? '',
-                'administrasi' => $request->input('administrasi') ?? 0,
+                'alamatkirim' => $request->input('alamatkirim') ?? '',
             ]);
 
             if ($insertheader == false) {
@@ -359,11 +361,13 @@ class PenjualanController extends Controller
                 $insertdetail = $modelDetail->insertData([
                     'saleid' => $request->input('saleid'),
                     'itemid' => $arrDetail[$i]['itemid'],
+                    'itemname' => $arrDetail[$i]['itemname'],
                     'price' => $arrDetail[$i]['price'],
                     'qty' => $arrDetail[$i]['qty'],
+                    'titipan' => $arrDetail[$i]['titipan'],
+                    'upduser' => Auth::user()->currentAccessToken()['namauser'],
                     'note' => $arrDetail[$i]['note'],
-                    'bagasi' => $arrDetail[$i]['bagasi'],
-                    'upduser' => Auth::user()->currentAccessToken()['namauser']
+                    'modal' => $arrDetail[$i]['modal']
                 ]);
 
                 if ($insertdetail == false) {
