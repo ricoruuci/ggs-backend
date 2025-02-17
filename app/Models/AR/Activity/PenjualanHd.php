@@ -62,28 +62,30 @@ class PenjualanHd extends BaseModel
     {
 
         $result = DB::insert(
-            "INSERT INTO artrpenjualanhd (saleid,soid,poid,transdate,custid,salesid,note,jatuhtempo,discount,currid,upddate,upduser,dp,flagcounter,rate,
+            "INSERT INTO artrpenjualanhd (saleid,soid,poid,transdate,kontransbrgid,custid,salesid,note,jatuhtempo,discount,currid,upddate,upduser,dp,flagcounter,rate,
             charge,nama,kasir,fgtax,ppnfee,alamat,administrasi,fglunas,fgtrans,fgupload,taxid,actor,fgform,nilaitax,alamatkirim)
-            VALUES (:saleid,:soid,:poid,:transdate,:custid,:salesid,:note,:term,:discount,'IDR',getdate(),:upduser,:dp,'L',1,
-            0,'',:kasir,:fgtax,0,:alamat,0,'B','B','T',:taxid,:nama,'AR',:nilaitax,:alamatkirim)",
+            VALUES (:saleid,:soid,:pocust,:transdate,:nopi,:custid,:salesid,:note,:term,:discamount,'IDR',getdate(),:upduser,:dp,'L',1,
+            0,'',:kasir,:fgtax,0,'',0,'B','B','T',:taxid,:nama,'AR',:nilaitax,:alamat)",
             [
                 'saleid' => $param['saleid'],
                 'soid' => $param['soid'],
-                'poid' => $param['poid'],
+                'pocust' => $param['pocust'],
                 'transdate' => $param['transdate'],
+                'nopi' => $param['nopi'],
                 'custid' => $param['custid'],
                 'salesid' => $param['salesid'],
                 'note' => $param['note'],
                 'term' => $param['term'],
-                'discount' => $param['discount'],
+                'discamount' => $param['discamount'],
                 'dp' => $param['dp'],
                 'upduser' => $param['upduser'],
                 'nama' => $param['nama'],
                 'kasir' => $param['upduser'],
                 'fgtax' => $param['fgtax'],
                 'nilaitax' => $param['nilaitax'],
-                'alamat' => $param['alamat'],
-                'alamatkirim' => $param['alamatkirim']
+                'taxid' => $param['taxid'],
+                // 'alamat' => $param['alamat'],
+                'alamat' => $param['alamat']
             ]
         );
 
@@ -96,27 +98,30 @@ class PenjualanHd extends BaseModel
             'UPDATE artrpenjualanhd SET
             transdate = :transdate,
             soid = :soid,
-            poid = :poid,
+            poid = :pocust,
             custid = :custid,
             salesid = :salesid,
+            kontransbrgid = :nopi,
             jatuhtempo = :term,
             discount = :discount,
-            nama = :nama,
+            actor = :nama,
             kasir = :kasir,
             upddate = getdate(),
             upduser = :upduser,
             fgtax = :fgtax,
             nilaitax = :nilaitax,
-            alamat = :alamat,
+            note = :note,
             dp = :dp,
-            alamatkirim = :alamatkirim
+            alamatkirim = :alamat
             
             WHERE saleid = :saleid',
             [
                 'saleid' => $param['saleid'],
                 'transdate' => $param['transdate'],
                 'soid' => $param['soid'],
+                'pocust' => $param['pocust'],
                 'custid' => $param['custid'],
+                'nopi' => $param['nopi'],
                 'salesid' => $param['salesid'],
                 'term' => $param['term'],
                 'discount' => $param['discamount'],
@@ -126,8 +131,8 @@ class PenjualanHd extends BaseModel
                 'fgtax' => $param['fgtax'],
                 'nilaitax' => $param['nilaitax'],
                 'alamat' => $param['alamat'],
-                'alamatkirim' => $param['alamatkirim'] ,
-                'dp' => $param['dp']          
+                'note' => $param['note'],
+                'dp' => $param['dp']
             ]
         );
 
@@ -145,10 +150,10 @@ class PenjualanHd extends BaseModel
         }
 
         $result = DB::select(
-            "SELECT a.saleid,a.transdate,a.soid,a.custid,b.custname,a.salesid,c.salesname,a.jatuhtempo as term,
-            a.administrasi,a.nama,a.alamat,
-            a.stpj as subtotal,a.discount as discamount,isnull(a.stpj-a.discount,0) as subafterdisc,
-            a.fgtax,a.ppnfee as nilaitax,a.ppn as taxamount,a.ttlpj as grandtotal,
+            "SELECT a.saleid,a.transdate,a.soid,a.custid,a.poid as pocust,isnull(a.kontransbrgid,'') as nopi,isnull(a.taxid,'') as taxid,a.note,b.custname,a.salesid,c.salesname,a.jatuhtempo as term,
+            DATEADD(DAY,ISNULL(a.jatuhtempo,0),a.transdate) as jatuhtempo,
+            a.administrasi,a.actor as nama,isnull(a.alamatkirim,'') as alamat,b.email as npwp,a.discount as discamount,isnull(a.stpj-a.discount,0) as subtotal,
+            a.fgtax,a.dp,a.ppnfee as nilaitax,a.ppn as taxamount,a.ttlpj as grandtotal,
             isnull((select sum(x.qty*x.komisi) from artrpenjualandt x where x.saleid=a.saleid),0) as totalbagasi,
             a.upddate,a.upduser
             FROM artrpenjualanhd a
@@ -182,10 +187,10 @@ class PenjualanHd extends BaseModel
     function getData($param)
     {
         $result = DB::selectOne(
-            "SELECT a.saleid,a.transdate,a.soid,a.custid,b.custname,a.salesid,c.salesname,a.jatuhtempo as term,
+            "SELECT a.saleid,a.transdate,a.soid,a.custid,a.poid as pocust,isnull(a.kontransbrgid,'') as nopi,isnull(a.taxid,'') as taxid,a.note,b.custname,a.salesid,c.salesname,a.jatuhtempo as term,
             DATEADD(DAY,ISNULL(a.jatuhtempo,0),a.transdate) as jatuhtempo,
-            a.administrasi,a.nama,a.alamat,a.discount as discamount,isnull(a.stpj-a.discount,0) as subafterdisc,
-            a.fgtax,a.ppnfee as nilaitax,a.ppn as taxamount,a.ttlpj as grandtotal,
+            a.administrasi,a.actor as nama,isnull(a.alamatkirim,'') as alamat,a.discount as discamount,isnull(a.stpj-a.discount,0) as subtotal,
+            a.fgtax,a.dp,a.nilaitax as nilaitax,a.ppn as taxamount,a.ttlpj as grandtotal,
             isnull((select sum(x.qty*x.komisi) from artrpenjualandt x where x.saleid=a.saleid),0) as totalbagasi,
             a.upddate,a.upduser
             FROM artrpenjualanhd a
@@ -229,8 +234,11 @@ class PenjualanHd extends BaseModel
     {
 
         $result = DB::selectONe(
-            "SELECT k.subtotal,case when k.fgtax='y' then (k.subtotal-k.dp)*k.nilaitax else 0 end as pajak,(k.subtotal-k.dp)+(k.subtotal-k.dp)*k.nilaitax+k.ongkir as total,k.modal from (
-            select isnull(sum(qty*price),0) as subtotal,isnull(b.dp,0) as dp,isnull(sum(qty*modal),0) as modal,isnull(b.administrasi,0) as ongkir,b.fgtax,isnull(b.nilaitax,0) as nilaitax
+            "SELECT k.subtotal,
+            case when k.fgtax='y' then (k.subtotal-k.dp)*k.nilaitax * 0.01 else 0 end as pajak,
+            (k.subtotal-k.dp)+(k.subtotal-k.dp)*k.nilaitax *0.01 +k.ongkir as total,k.modal from (
+            select isnull(sum(qty*price),0) as subtotal,isnull(b.dp,0) as dp,isnull(sum(qty*modal),0) as modal,
+			isnull(b.administrasi,0) as ongkir,b.fgtax,isnull(b.nilaitax,0) as nilaitax
             from artrpenjualandt a
             inner join artrpenjualanhd b on a.saleid=b.saleid
             where a.saleid=:saleid
@@ -247,13 +255,13 @@ class PenjualanHd extends BaseModel
     function updateTotal($param)
     {
         $result = DB::update(
-            'UPDATE artrpenjualanhd SET ttlpj = :total, stpj = :subtotal, ppn = :pajak, hpp = :modal  WHERE saleid = :saleid',
+            'UPDATE artrpenjualanhd SET ttlpj = :total, stpj = :subtotal, ppn = :pajak, hpp = :modal  WHERE saleid = :saleid ',
             [
                 'saleid' => $param['saleid'],
                 'total' => $param['total'],
                 'subtotal' => $param['subtotal'],
                 'pajak' => $param['pajak'],
-                'modal' => $param['modal']
+                'modal' => $param['modal'],
             ]
         );
 
@@ -291,30 +299,30 @@ class PenjualanHd extends BaseModel
         return $result;
     }
 
-  function insertAllLog($param)
-    {
-        $result = DB::insert(
-            "INSERT INTO AllPenjualan (saleid,salesid,soid,itemid,price,qty,upddate,upduser,custid,discount,currid,transdate,dp,nama,administrasi) 
-             VALUES (:saleid,:salesid,:soid,:itemid,:price,:qty,getdate(),:upduser,:custid,:discount,'IDR',:transdate,:dp,:nama,:administrasi) ",
-            [
-                'saleid' => $param['saleid'],
-                'salesid' => $param['salesid'],
-                'soid' => $param['soid'],
-                'itemid' => $param['itemid'],
-                'qty' => $param['qty'],
-                'price' => $param['price'],
-                'upduser' => $param['upduser'],
-                'custid' => $param['custid'],
-                'discount' => $param['discount'],
-                'transdate' => $param['transdate'],
-                'dp' => $param['dp'],
-                'nama' => $param['nama'],
-                'administrasi' => $param['administrasi']
-            ]
-        );
+    // function insertAllLog($param)
+    // {
+    //     $result = DB::insert(
+    //         "INSERT INTO AllPenjualan (saleid,salesid,soid,itemid,price,qty,upddate,upduser,custid,discount,currid,transdate,dp,nama,administrasi) 
+    //          VALUES (:saleid,:salesid,:soid,:itemid,:price,:qty,getdate(),:upduser,:custid,:discount,'IDR',:transdate,:dp,:nama,:administrasi) ",
+    //         [
+    //             'saleid' => $param['saleid'],
+    //             'salesid' => $param['salesid'],
+    //             'soid' => $param['soid'],
+    //             'itemid' => $param['itemid'],
+    //             'qty' => $param['qty'],
+    //             'price' => $param['price'],
+    //             'upduser' => $param['upduser'],
+    //             'custid' => $param['custid'],
+    //             'discount' => $param['discount'],
+    //             'transdate' => $param['transdate'],
+    //             'dp' => $param['dp'],
+    //             'nama' => $param['nama'],
+    //             'administrasi' => $param['administrasi']
+    //         ]
+    //     );
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
     function cekPenjualan($saleid)
     {
@@ -397,6 +405,44 @@ class PenjualanHd extends BaseModel
             'SELECT * from artrpurchaseorderhd WHERE poid = :soid',
             [
                 'soid' => $soid
+            ]
+        );
+
+        return $result;
+    }
+
+    function cariFPS($param)
+    {
+        $result = DB::select(
+            "SELECT taxid from armskdpajak 
+            where taxid like :taxidkeyword 
+            -- and fgactive='Y' 
+            and taxid not in (select isnull(taxid,'-') from artrpenjualanhd) 
+            order by taxid",
+            [
+                'taxidkeyword' => '%' . $param['taxidkeyword'] . '%'
+            ]
+        );
+
+        return $result;
+    }
+
+    function cariPi($param)
+    {
+        $result = DB::select(
+            "SELECT performaid as nopi,convert(varchar(10),transdate,103) as tanggal,isnull(poid,'') as poid,isnull(dp*subtotal*0.01,0) as dp 
+             from artrperformahd 
+             where custid=:custid 
+             and soid=:soid 
+             and performaid like :nopikeyword
+             and isnull(poid,'') like :poidkeyword
+             and performaid not in (select kontransbrgid from artrpenjualanhd where fgform='DP' and custid=:custid1)",
+            [
+                'soid' => $param['soid'],
+                'custid' => $param['custid'],
+                'custid1' => $param['custid'],
+                'nopikeyword' => '%' . $param['nopikeyword'] . '%',
+                'poidkeyword' => '%' . $param['poidkeyword'] . '%'
             ]
         );
 

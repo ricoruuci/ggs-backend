@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Traits\ArrayPaginator;
 use App\Traits\HttpResponse;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class PenjualanController extends Controller
 {
@@ -71,26 +72,28 @@ class PenjualanController extends Controller
 
         try {
             $hasilpoid = $sales->beforeAutoNumber($request->input('transdate'), $request->input('fgtrans'), $request->input('custid'));
-            //$soid = $sales->CariSO($request->input('soid'));
-            //dd(var_dump($soid));
+            // $soid = $sales->CariSO($request->input('soid'));
+            // var_dump($hasilpoid);
 
             $insertheader = $sales->insertData([
                 'saleid' => $hasilpoid,
                 'soid' => $request->input('soid'),
-                'poid' => $request->input('poid'),
+                'pocust' => $request->input('pocust'),
+                'nopi' => $request->input('nopi'),
                 'transdate' => $request->input('transdate'),
                 'custid' => $request->input('custid'),
                 'salesid' => $request->input('salesid'),
-                'jatuhtempo' => $request->input('term') ?? 30,
+                'term' => $request->input('term') ?? 30,
                 'note' => $request->input('note') ?? '',
                 'discamount' => $request->input('discamount') ?? 0,
                 'upduser' => Auth::user()->currentAccessToken()['namauser'],
                 'dp' => $request->input('dp') ?? 0,
                 'nama' => $request->input('nama') ?? '',
+                'taxid' => $request->input('taxid') ?? '',
                 'fgtax' => $request->input('fgtax') ?? 'T',
                 'nilaitax' => $request->input('nilaitax') ?? '',
                 'alamat' => $request->input('alamat') ?? '',
-                'alamatkirim' => $request->input('alamatkirim') ?? ''
+                // 'alamatkirim' => $request->input('alamatkirim') ?? ''
             ]);
 
             //dd(var_dump($insertheader));
@@ -134,10 +137,10 @@ class PenjualanController extends Controller
                     'itemname' => $arrDetail[$i]['itemname'],
                     'price' => $arrDetail[$i]['price'],
                     'qty' => $arrDetail[$i]['qty'],
-                    'titipan' => $arrDetail[$i]['titipan'],
-                    'upduser' => Auth::user()->currentAccessToken()['namauser'],
+                    'uomid' => $arrDetail[$i]['uomid'],
                     'note' => $arrDetail[$i]['note'],
-                    'modal' => $arrDetail[$i]['modal']
+                    'upduser' => Auth::user()->currentAccessToken()['namauser'],
+                    'bagasi' => $arrDetail[$i]['bagasi']
                 ]);
 
                 if ($insertdetail == false) {
@@ -167,40 +170,42 @@ class PenjualanController extends Controller
                     return $this->responseError('insert allitem gagal', 400);
                 }
 
-                $insertalllog = $sales->insertAllLog([
-                    'saleid' => $hasilpoid,
-                    'salesid' => $request->input('salesid'),
-                    'soid' => $request->input('soid'),
-                    'upduser' => Auth::user()->currentAccessToken()['namauser'],
-                    'custid' => $request->input('custid'),
-                    'discount' => $request->input('discount') ?? 0,
-                    'dp' => $request->input('dp') ?? 0,
-                    'nama' => $request->input('nama') ?? '',
-                    'administrasi' => $request->input('administrasi') ?? 0,
-                    'transdate' => $request->input('transdate'),
-                    'itemid' => $arrDetail[$i]['itemid'],
-                    'price' => $arrDetail[$i]['price'],
-                    'qty' => $arrDetail[$i]['qty']
+                // $insertalllog = $sales->insertAllLog([
+                //     'saleid' => $hasilpoid,
+                //     'soid' => $request->input('soid'),
+                //     'pocust' => $request->input('pocust'),
+                //     'nopi' => $request->input('nopi'),
+                //     'transdate' => $request->input('transdate'),
+                //     'custid' => $request->input('custid'),
+                //     'salesid' => $request->input('salesid'),
+                //     'term' => $request->input('term') ?? 30,
+                //     'note' => $request->input('note') ?? '',
+                //     'discamount' => $request->input('discamount') ?? 0,
+                //     'upduser' => Auth::user()->currentAccessToken()['namauser'],
+                //     'dp' => $request->input('dp') ?? 0,
+                //     'nama' => $request->input('nama') ?? '',
+                //     'fgtax' => $request->input('fgtax') ?? 'T',
+                //     'nilaitax' => $request->input('nilaitax') ?? '',
+                //     'alamat' => $request->input('alamat') ?? '',
+                // ]);
 
-                ]);
+                // if ($insertalllog == false) {
 
-                if ($insertalllog == false) {
+                //     DB::rollBack();
 
-                    DB::rollBack();
-
-                    return $this->responseError('insert alllog gagal', 400);
-                }
+                //     return $this->responseError('insert alllog gagal', 400);
+                // }
 
                 if (isset($arrDetail[$i]['detailsn'])) {
 
                     $arrDetailsn = $arrDetail[$i]['detailsn'];
 
-                    if (sizeof($arrDetailsn) <> $arrDetail[$i]['qty']) {
+                    // if (sizeof($arrDetailsn) <> $arrDetail[$i]['qty']) {
 
-                        DB::rollBack();
+                    //     DB::rollBack();
 
-                        return $this->responseError('jumlah SN barang (kode :' . $arrDetail[$i]['itemid'] . ') tidak sama dengan jumlah detail', 400);
-                    }
+                    //     return $this->responseError('jumlah SN barang (kode :' . $arrDetail[$i]['itemid'] . ') tidak sama dengan jumlah detail', 400);
+                    // }
 
                     for ($u = 0; $u < sizeof($arrDetailsn); $u++) {
 
@@ -240,7 +245,7 @@ class PenjualanController extends Controller
                 'total' => $hitung->total,
                 'pajak' => $hitung->pajak,
                 'subtotal' => $hitung->subtotal,
-                'titipan' => $hitung->titipan,
+                'modal' => $hitung->modal,
                 'saleid' => $hasilpoid
             ]);
 
@@ -306,7 +311,8 @@ class PenjualanController extends Controller
             $insertheader = $sales->updateAllData([
                 'saleid' => $request->input('saleid'),
                 'soid' => $request->input('soid'),
-                'poid' => $request->input('poid'),
+                'pocust' => $request->input('pocust'),
+                'nopi' => $request->input('nopi'),
                 'transdate' => $request->input('transdate'),
                 'custid' => $request->input('custid'),
                 'salesid' => $request->input('salesid'),
@@ -319,7 +325,7 @@ class PenjualanController extends Controller
                 'fgtax' => $request->input('fgtax') ?? 'T',
                 'nilaitax' => $request->input('nilaitax') ?? '',
                 'alamat' => $request->input('alamat') ?? '',
-                'alamatkirim' => $request->input('alamatkirim') ?? '',
+                'note' => $request->input('note') ?? '',
             ]);
 
             if ($insertheader == false) {
@@ -364,10 +370,10 @@ class PenjualanController extends Controller
                     'itemname' => $arrDetail[$i]['itemname'],
                     'price' => $arrDetail[$i]['price'],
                     'qty' => $arrDetail[$i]['qty'],
-                    'titipan' => $arrDetail[$i]['titipan'],
+                    'uomid' => $arrDetail[$i]['uomid'],
+                    'bagasi' => $arrDetail[$i]['bagasi'],
                     'upduser' => Auth::user()->currentAccessToken()['namauser'],
-                    'note' => $arrDetail[$i]['note'],
-                    'modal' => $arrDetail[$i]['modal']
+                    'note' => $arrDetail[$i]['note']
                 ]);
 
                 if ($insertdetail == false) {
@@ -397,31 +403,6 @@ class PenjualanController extends Controller
                     return $this->responseError('insert allitem gagal', 400);
                 }
 
-                $insertalllog = $sales->insertAllLog([
-                    'saleid' => $request->input('saleid'),
-                    'salesid' => $request->input('salesid'),
-                    'soid' => $request->input('soid'),
-                    'transdate' => $request->input('transdate'),
-                    'upduser' => Auth::user()->currentAccessToken()['namauser'],
-                    'custid' => $request->input('custid'),
-                    'discount' => $request->input('discount') ?? 0,
-                    'dp' => $request->input('dp') ?? 0,
-                    'nama' => $request->input('nama') ?? '',
-                    'administrasi' => $request->input('administrasi') ?? 0,
-                    'itemid' => $arrDetail[$i]['itemid'],
-                    'price' => $arrDetail[$i]['price'],
-                    'qty' => $arrDetail[$i]['qty']
-
-                ]);
-
-                if ($insertalllog == false) {
-
-                    DB::rollBack();
-
-                    return $this->responseError('insert alllog gagal', 400);
-                }
-
-
 
                 if (isset($arrDetail[$i]['detailsn'])) {
 
@@ -441,8 +422,8 @@ class PenjualanController extends Controller
                             'snid' => $arrDetailsn[$u]['snid'],
                             'itemid' => $arrDetail[$i]['itemid'],
                             'price' => $arrDetail[$i]['price'],
-                            'modal' => $arrDetailsn[$u]['modal'],
                             'purchaseid' => $arrDetailsn[$u]['purchaseid'],
+                            'modal' => $arrDetailsn[$u]['modal'],
                             'upduser' => Auth::user()->currentAccessToken()['namauser']
                         ]);
 
@@ -464,13 +445,10 @@ class PenjualanController extends Controller
                 'total' => $hitung->total,
                 'pajak' => $hitung->pajak,
                 'subtotal' => $hitung->subtotal,
-                'titipan' => $hitung->titipan,
+                'modal' => $hitung->modal,
                 'saleid' => $request->input('saleid')
             ]);
 
-            $hitung = $sales->hitungTotal([
-                'saleid' => $request->input('saleid')
-            ]);
 
 
 
@@ -720,5 +698,41 @@ class PenjualanController extends Controller
 
             return $this->responsePagination($resultPaginated);
         }
+    }
+
+    public function cariFPS(Request $request)
+    {
+        $sales = new PenjualanHd();
+
+
+        $resultdetail = $sales->cariFPS(
+            [
+                'taxidkeyword' => $request->input('taxidkeyword') ?? '',
+            ]
+        );
+
+        $resultPaginated = $this->arrayPaginator($request, $resultdetail);
+
+        return $this->responsePagination($resultPaginated);
+    }
+
+    public function cariPi(Request $request)
+    {
+        $sales = new PenjualanHd();
+
+
+        $resultdetail = $sales->cariPi(
+            [
+                'nopikeyword' => $request->input('nopikeyword') ?? '',
+                'poidkeyword' => $request->input('poidkeyword') ?? '',
+                'custid' => $request->input('custid'),
+                'soid' => $request->input('soid')
+
+            ]
+        );
+
+        $resultPaginated = $this->arrayPaginator($request, $resultdetail);
+
+        return $this->responsePagination($resultPaginated);
     }
 }

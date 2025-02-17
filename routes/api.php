@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AP\Master\SupplierController;
+use App\Http\Controllers\AP\Activity\KonsinyasiController;
+use App\Http\Controllers\AP\Activity\PurchaseOrderController;
+use App\Http\Controllers\AP\Activity\OtorisasiPembelianController;
 use App\Http\Controllers\AR\Activity\PenjualanController;
 use App\Http\Controllers\AR\Activity\SalesOrderController;
 use App\Http\Controllers\AR\Master\CustomerController;
@@ -10,11 +13,21 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IN\Master\ItemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::patch('changepass', [AuthController::class, 'changePass'])->middleware('auth:sanctum');
+
+//Dashboard 
+Route::get('dashboard', [DashboardController::class, 'getGrafikPenjualan'])->middleware('auth:sanctum');
+Route::get('dashboard/tahun', [DashboardController::class, 'getSalesYear'])->middleware('auth:sanctum');
+Route::get('dashboard/total', [DashboardController::class, 'getTotal'])->middleware('auth:sanctum');
+Route::get('dashboard/user', [DashboardController::class, 'getUserAktif'])->middleware('auth:sanctum');
+Route::get('dashboard/netcash', [DashboardController::class, 'getHutangPiutang'])->middleware('auth:sanctum');
+Route::get('dashboard/jual', [DashboardController::class, 'getJualTahunan'])->middleware('auth:sanctum');
+
 
 //Master Supplier
 Route::post('supplier', [SupplierController::class, 'insertData'])->middleware('auth:sanctum');
@@ -52,6 +65,27 @@ Route::get('penjualan/cari-so', [PenjualanController::class, 'cariSO'])->middlew
 Route::get('penjualan/cari-detail', [PenjualanController::class, 'cariDetail'])->middleware('auth:sanctum');
 Route::get('penjualan/cari-sn', [PenjualanController::class, 'cariSN'])->middleware('auth:sanctum');
 Route::get('penjualan/cekbayar', [PenjualanController::class, 'cekBayar'])->middleware('auth:sanctum');
+Route::get('penjualan/carifps', [PenjualanController::class, 'cariFPS'])->middleware('auth:sanctum');
+Route::get('penjualan/caripi', [PenjualanController::class, 'cariPi'])->middleware('auth:sanctum');
+
+//Purchase Order
+Route::post('purchaseorder', [PurchaseOrderController::class, 'insertData'])->middleware('auth:sanctum');
+Route::get('purchaseorder', [PurchaseOrderController::class, 'getListData'])->middleware('auth:sanctum');
+Route::patch('purchaseorder', [PurchaseOrderController::class, 'updateAllData'])->middleware('auth:sanctum');
+Route::delete('purchaseorder', [PurchaseOrderController::class, 'deleteData'])->middleware('auth:sanctum');
+
+//otorisasi Pembelian
+Route::get('purchase/otorisasi', [OtorisasiPembelianController::class, 'getListOto'])->middleware('auth:sanctum');
+Route::patch('purchase/otorisasi', [OtorisasiPembelianController::class, 'updateData'])->middleware('auth:sanctum');
+
+//Konsinyasi 
+Route::post('grn', [KonsinyasiController::class, 'insertData'])->middleware('auth:sanctum');
+Route::get('grn', [KonsinyasiController::class, 'getListData'])->middleware('auth:sanctum');
+Route::patch('grn', [KonsinyasiController::class, 'updateAllData'])->middleware('auth:sanctum');
+Route::delete('grn', [KonsinyasiController::class, 'deleteData'])->middleware('auth:sanctum');
+Route::get('listpoblmgrn', [KonsinyasiController::class, 'getListPO'])->middleware('auth:sanctum');
+Route::get('listpodt', [KonsinyasiController::class, 'getListPODt'])->middleware('auth:sanctum');
+Route::get('autosn', [KonsinyasiController::class, 'generateSN'])->middleware('auth:sanctum');
 
 //Laporan Sales Order
 Route::get('rekapso', [RekapSOController::class, 'getRekapSO'])->middleware('auth:sanctum');

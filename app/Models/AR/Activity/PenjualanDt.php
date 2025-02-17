@@ -42,9 +42,9 @@ class PenjualanDt extends Model
 
         $result = DB::insert(
             "INSERT INTO ARTrPenjualanDt
-            (saleid,itemid,price,warehouseid,qty,upduser,upddate,note,note2,flagretur,komisi,uomid,modal)
+            (saleid,itemid,price,warehouseid,qty,upduser,upddate,note,note2,flagretur,komisi,uomid)
             VALUES
-            (:saleid,:itemid,:price,'01GU',:qty,:upduser,getdate(),:itemname,:note,'T',:titipan,:uomid,:modal)",
+            (:saleid,:itemid,:price,'01GU',:qty,:upduser,getdate(),:itemname,:note,'T',:bagasi,:uomid)",
 
             [
                 'saleid' => $param['saleid'],
@@ -55,8 +55,7 @@ class PenjualanDt extends Model
                 'upduser' => $param['upduser'],
                 'note' => $param['note'],
                 'itemname' => $param['itemname'],
-                'titipan' => $param['titipan'],
-                'modal' => $param['modal']
+                'bagasi' => $param['bagasi']
             ]
         );
 
@@ -69,7 +68,7 @@ class PenjualanDt extends Model
         $detailsn = new PenjualanSN();
 
         $result = DB::select(
-            "SELECT a.saleid,a.itemid,b.itemname,a.qty,a.uomid,a.price,isnull(a.komisi,0) as titipan,a.qty*a.price as total,isnull(a.note2,'') as note,a.upduser,a.upddate
+            "SELECT a.saleid,a.itemid,isnull(a.modal,0) as modal,b.itemname,a.qty,a.uomid,a.price,isnull(a.komisi,0) as bagasi,a.qty*a.price as total,isnull(a.note2,'') as note,a.upduser,a.upddate
             from artrpenjualandt a
             inner join inmsitem b on a.itemid=b.itemid
             where a.saleid = :saleid ",

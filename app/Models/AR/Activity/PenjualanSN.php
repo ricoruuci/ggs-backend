@@ -37,9 +37,9 @@ class PenjualanSN extends Model
 
         $result = DB::insert(
             "INSERT INTO ARTrPenjualansn
-            (snid,saleid,itemid,price,warehouseid,upddate,upduser,modal,purchaseid,fgsn)
+            (snid,saleid,itemid,price,warehouseid,upddate,upduser,purchaseid,fgsn,modal)
             VALUES
-            (:snid,:saleid,:itemid,:price,:warehouseid,getdate(),:upduser,:modal,:purchaseid,'T')",
+            (:snid,:saleid,:itemid,:price,:warehouseid,getdate(),:upduser,:purchaseid,'T',:modal)",
 
             [
                 'snid' => $param['snid'],
@@ -48,8 +48,8 @@ class PenjualanSN extends Model
                 'price' => $param['price'],
                 'warehouseid' => '01GU',
                 'upduser' => $param['upduser'],
-                'modal' => $param['modal'],
-                'purchaseid' => $param['purchaseid']
+                'purchaseid' => $param['purchaseid'],
+                'modal' => $param['modal']
             ]
         );
 

@@ -180,7 +180,7 @@ class ARMsCustomer extends BaseModel
         return $result;
     }
 
-    public function beforeAutoNumber($custname,$tipe)
+    public function beforeAutoNumber($custname, $tipe)
     {
 
         $nama = substr($custname, 0, 1);
