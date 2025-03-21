@@ -10,6 +10,8 @@ use App\Http\Controllers\AR\Master\CustomerController;
 use App\Http\Controllers\AR\Master\SalesController;
 use App\Http\Controllers\AR\Report\RekapSOController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CF\Master\RekeningController;
+use App\Http\Controllers\CF\Report\RptBukuBesarController;
 use App\Http\Controllers\IN\Master\ItemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -96,3 +98,7 @@ Route::get('item', [ItemController::class, 'getListData'])->middleware('auth:san
 Route::post('item', [ItemController::class, 'insertData'])->middleware('auth:sanctum');
 Route::patch('item', [ItemController::class, 'updateAllData'])->middleware('auth:sanctum');
 Route::delete('item', [ItemController::class, 'deleteData'])->middleware('auth:sanctum');
+
+Route::get('rekening', [RekeningController::class, 'getListData'])->middleware('auth:sanctum');
+
+Route::get('rptbukubesar', [RptBukuBesarController::class, 'getLaporan'])->middleware('auth:sanctum');
