@@ -12,6 +12,7 @@ use App\Http\Controllers\AR\Report\RekapSOController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CF\Master\RekeningController;
 use App\Http\Controllers\CF\Report\RptBukuBesarController;
+use App\Http\Controllers\CF\Report\RptFinance;
 use App\Http\Controllers\IN\Master\ItemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -101,4 +102,8 @@ Route::delete('item', [ItemController::class, 'deleteData'])->middleware('auth:s
 
 Route::get('rekening', [RekeningController::class, 'getListData'])->middleware('auth:sanctum');
 
-Route::get('rptbukubesar', [RptBukuBesarController::class, 'getLaporan'])->middleware('auth:sanctum');
+Route::get('rptbukubesar1', [RptBukuBesarController::class, 'getLaporan'])->middleware('auth:sanctum');
+//Laporan
+Route::get('rptbukubesar', [RptFinance::class, 'getRptBukuBesar'])->middleware('auth:sanctum');
+Route::get('rptlabarugi', [RptFinance::class, 'getRptLabaRugi'])->middleware('auth:sanctum');
+Route::get('rptneraca', [RptFinance::class, 'getRptNeraca'])->middleware('auth:sanctum');
