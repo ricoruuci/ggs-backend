@@ -148,7 +148,7 @@ class SalesOrderHd extends BaseModel
         $result = DB::select(
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
-            isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
+            isnull(a.prid,'') as pocust,isnull(a.note,'') as note,isnull(a.fgtax,'Y') as fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
             isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
             ISNULL(ROUND((
@@ -184,7 +184,7 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
             WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,
 			
-			a.attn,a.telp,a.upddate,a.upduser
+			isnull(a.attn,'') as attn,isnull(a.telp,'') as telp,a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
@@ -215,7 +215,7 @@ class SalesOrderHd extends BaseModel
         $result = DB::selectOne(
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
-            isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
+            isnull(a.prid,'') as pocust,isnull(a.note,'') as note,isnull(a.fgtax,'Y') as fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
             isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
             ISNULL(ROUND((
@@ -251,7 +251,7 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
             WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,
 			
-			a.attn,a.telp,a.upddate,a.upduser
+			isnull(a.attn,'') as attn,isnull(a.telp,'') as telp,a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
@@ -293,7 +293,7 @@ class SalesOrderHd extends BaseModel
         $result = DB::select(
             "SELECT a.poid as soid,a.transdate,a.tglkirim,a.custid,b.custname,a.salesid,c.salesname,
             isnull(a.term,'') as term,isnull(a.hterm,0) as termin,isnull(a.address,'') as address,isnull(a.ship,'') as ship,
-            isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
+            isnull(a.prid,'') as pocust,isnull(a.note,'') as note,isnull(a.fgtax,'Y') as fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
             isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
             ISNULL(ROUND((
@@ -329,7 +329,7 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
             WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,
 			
-			a.attn,a.telp,a.upddate,a.upduser
+			isnull(a.attn,'') as attn,isnull(a.telp,'') as telp,a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
