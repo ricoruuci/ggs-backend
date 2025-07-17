@@ -151,7 +151,27 @@ class SalesOrderHd extends BaseModel
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
             isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
-            isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
+            ISNULL(ROUND((
+            (
+                SELECT SUM(x.Qty * (x.Price - x.Modal))
+                FROM ARTrPurchaseOrderDt x
+                WHERE x.poid = a.poid
+            ) - ISNULL(a.Disc, 0) - a.TBagasi
+            ), 2), 0) AS margin,
+                        ISNULL(ROUND(
+            (
+                SELECT 
+                CASE 
+                    WHEN SUM(x.qty * x.modal) = 0 THEN 100 
+                    ELSE 
+                    (SUM(x.Qty * (x.Price - x.Modal)) - ISNULL(a.Disc, 0) - a.TBagasi) 
+                    / NULLIF(SUM(x.qty * x.modal), 0) * 100
+                END
+                FROM ARTrPurchaseOrderDt x  
+                WHERE x.poid = a.poid
+            ), 2
+            ), 0) AS pmargin,
+
             CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
             WHEN A.Jenis='Y' THEN 'APPROVED'
@@ -162,7 +182,9 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='OG' THEN 'JUAL RUGI & OVERDUE'
             WHEN A.Jenis='GL' THEN 'JUAL RUGI & OVERLIMIT'
             WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
-            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,a.upddate,a.upduser
+            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,
+			
+			a.attn,a.telp,a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
@@ -196,7 +218,27 @@ class SalesOrderHd extends BaseModel
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
             isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
-            isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
+            ISNULL(ROUND((
+            (
+                SELECT SUM(x.Qty * (x.Price - x.Modal))
+                FROM ARTrPurchaseOrderDt x
+                WHERE x.poid = a.poid
+            ) - ISNULL(a.Disc, 0) - a.TBagasi
+            ), 2), 0) AS margin,
+                        ISNULL(ROUND(
+            (
+                SELECT 
+                CASE 
+                    WHEN SUM(x.qty * x.modal) = 0 THEN 100 
+                    ELSE 
+                    (SUM(x.Qty * (x.Price - x.Modal)) - ISNULL(a.Disc, 0) - a.TBagasi) 
+                    / NULLIF(SUM(x.qty * x.modal), 0) * 100
+                END
+                FROM ARTrPurchaseOrderDt x  
+                WHERE x.poid = a.poid
+            ), 2
+            ), 0) AS pmargin,
+
             CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
             WHEN A.Jenis='Y' THEN 'APPROVED'
@@ -207,8 +249,9 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='OG' THEN 'JUAL RUGI & OVERDUE'
             WHEN A.Jenis='GL' THEN 'JUAL RUGI & OVERLIMIT'
             WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
-            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,
-            a.upddate,a.upduser
+            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,
+			
+			a.attn,a.telp,a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
@@ -253,7 +296,27 @@ class SalesOrderHd extends BaseModel
             isnull(a.prid,'') as pocust,isnull(a.note,'') as note,a.fgtax,a.nilaippn as nilaitax,isnull(a.fob,'') as fob,
             isnull(a.stso,0) as subtotal,isnull(a.ppn,0) as ppn,
             isnull(a.ttlso,0) as grandtotal,isnull(a.ttlso,0) as ttlso,
-            isnull(round((select sum(x.Qty*(x.Price-x.Modal)) from ARTrPurchaseOrderDt x where x.poid=a.poid),2),0)-isnull(a.svc,0) as margin,
+            ISNULL(ROUND((
+            (
+                SELECT SUM(x.Qty * (x.Price - x.Modal))
+                FROM ARTrPurchaseOrderDt x
+                WHERE x.poid = a.poid
+            ) - ISNULL(a.Disc, 0) - a.TBagasi
+            ), 2), 0) AS margin,
+                        ISNULL(ROUND(
+            (
+                SELECT 
+                CASE 
+                    WHEN SUM(x.qty * x.modal) = 0 THEN 100 
+                    ELSE 
+                    (SUM(x.Qty * (x.Price - x.Modal)) - ISNULL(a.Disc, 0) - a.TBagasi) 
+                    / NULLIF(SUM(x.qty * x.modal), 0) * 100
+                END
+                FROM ARTrPurchaseOrderDt x  
+                WHERE x.poid = a.poid
+            ), 2
+            ), 0) AS pmargin,
+
             CASE WHEN A.Jenis='L' THEN 'OVERLIMIT'
             WHEN A.Jenis='T' THEN 'BELUM PROSES'
             WHEN A.Jenis='Y' THEN 'APPROVED'
@@ -264,8 +327,9 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='OG' THEN 'JUAL RUGI & OVERDUE'
             WHEN A.Jenis='GL' THEN 'JUAL RUGI & OVERLIMIT'
             WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
-            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,a.attn,a.telp,
-            a.upddate,a.upduser
+            WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,
+			
+			a.attn,a.telp,a.upddate,a.upduser
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
