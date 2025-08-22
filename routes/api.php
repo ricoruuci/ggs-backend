@@ -14,6 +14,7 @@ use App\Http\Controllers\CF\Master\RekeningController;
 use App\Http\Controllers\CF\Report\RptBukuBesarController;
 use App\Http\Controllers\CF\Report\RptFinance;
 use App\Http\Controllers\IN\Master\ItemController;
+use App\Http\Controllers\AbsensiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
@@ -22,6 +23,12 @@ use App\Http\Controllers\DashboardController;
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::patch('changepass', [AuthController::class, 'changePass'])->middleware('auth:sanctum');
+
+//Absensi
+Route::get('laporanabsen', [AbsensiController::class, 'getLaporanAbsen'])->middleware('auth:sanctum');
+Route::post('absen', [AbsensiController::class, 'insertAbsen'])->middleware('auth:sanctum');
+Route::get('otoabsen', [AbsensiController::class, 'getOtoAbsen'])->middleware('auth:sanctum');
+Route::post('otoabsen', [AbsensiController::class, 'postOtoAbsen'])->middleware('auth:sanctum');
 
 //Dashboard 
 Route::get('dashboard', [DashboardController::class, 'getGrafikPenjualan'])->middleware('auth:sanctum');
