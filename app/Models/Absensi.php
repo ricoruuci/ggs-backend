@@ -107,6 +107,8 @@ class Absensi extends Model
 
         $salesid = $getsales->salesid;
 
+        
+
         // $tanggalHariIni = getdate(); 
         // $tanggalHariIni = date("Y-m-d H:i:s");
         $tahun = date("Y");

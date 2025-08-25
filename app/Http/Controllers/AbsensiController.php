@@ -76,19 +76,33 @@ class AbsensiController extends Controller
     {
         $barang = new Absensi();
 
-        $cek = $barang->cekAbsen($request->input('userid'));
+        $sales = DB::selectOne(
+            "SELECT salesid FROM sysmsuser WHERE userid = :userid1",
+            [
+                'userid1' => Auth::user()->currentAccessToken()['namauser']
+            ]
+            );
+
+            $salesid = $sales->salesid ?? null;
+
+            if (!$salesid || $salesid === null) {
+                return $this->responseError('User tidak ditemukan di master sales', 400);
+            }
+
+
+        $cek = $barang->cekAbsen(Auth::user()->currentAccessToken()['namauser']);
         // dd(var_dump($cek));
 
         if ($cek == true) {
 
-            return $this->responseError('Anda sudah absen hariini, tidak bisa absen lagi', 400);
+            return $this->responseError('Anda sudah absen hari ini, tidak bisa absen lagi', 400);
         }
 
         DB::beginTransaction();
 
         try {
             $insertheader = $barang->insertAbsen([
-                'userid' => $request->input('userid'),
+                'userid' => Auth::user()->currentAccessToken()['namauser'],
                 'keterangan' => $request->input('keterangan'),
                 'keperluan' => $request->input('keperluan'),
                 'foto' => $request->input('foto')
