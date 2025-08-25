@@ -19,7 +19,8 @@ class Absensi extends Model
             case when A.fgabsen='L' then 'CUSTOMER VISIT' when A.fgabsen='I' then 'IZIN'
             when A.fgabsen='T' then 'TELAT/MASUK SIANG' when A.fgabsen='S' then 'SAKIT'
             when A.fgabsen='D' then 'DINAS' when A.fgabsen='C' then 'CUTI'
-            when A.fgabsen='W' then 'WORK FROM HOME' end as keperluan,A.keterangan,
+            when A.fgabsen='W' then 'WORK FROM HOME' 
+            when A.fgabsen='Y' then 'MASUK' end as keperluan,A.keterangan,
             case when A.fgsubmit='O' then 'OFFICE' else 'MOBILE' end as submit,A.foto
             from trreqabsen A inner join ARmsSales B on A.salesid=B.Salesid where fgoto='T' "
         );
