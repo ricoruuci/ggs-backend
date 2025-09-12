@@ -133,6 +133,7 @@ class SalesOrderController extends Controller
                 'grandtotal' => $hitung->grandtotal,
                 'subtotal' => $hitung->subtotal,
                 'ppn' => $hitung->ppn,
+                'margin' => $hitung->pmargin,
                 'soid' => $hasilpoid
             ]);
 
@@ -141,7 +142,7 @@ class SalesOrderController extends Controller
                 'custid' => $request->input('custid'),
                 'transdate' => $request->input('transdate')
             ]);
-
+          //  dd($hasilotorisasi);
             $sales->updateJenis([
                 'jenis' => $hasilotorisasi,
                 'soid' => $hasilpoid
@@ -285,6 +286,7 @@ class SalesOrderController extends Controller
                 'grandtotal' => $hitung->grandtotal,
                 'subtotal' => $hitung->subtotal,
                 'ppn' => $hitung->ppn,
+                'margin' => $hitung->pmargin,
                 'soid' => $request->input('soid')
             ]);
 
@@ -457,17 +459,21 @@ class SalesOrderController extends Controller
     {
         $sales = new SalesOrderHd();
 
-        $cekpmargin = $sales->cekMargin($request->input('soid'));
+        $OtoMargin = $sales->cekOtoMargin(Auth::user()->currentAccessToken()['namauser']);
+        $cek = $sales->cekOtoLevel(Auth::user()->currentAccessToken()['namauser']);
 
-        if ($cekpmargin == true) {
+        if ($cek == False)  {
 
-            $cek = $sales->cekOtoLevel(Auth::user()->currentAccessToken()['namauser']);
-
-            if ($cek == false) {
-
-                return $this->responseError('Anda tidak memiliki akses untuk otorisasi SO ini', 400);
+                return $this->responseError('Anda Tidak Mempunyai Akses Otorisasi' , 400);
             }
-        }
+
+        $cekpmargin = $sales->cekMargin(Auth::user()->currentAccessToken()['namauser'],$request->input('soid'));
+
+        if ($cekpmargin == False)  {
+
+                return $this->responseError('Anda Hanya Bisa Otorisasi Margin diatas '.$OtoMargin->otomargin , 400);
+            }
+      
 
         $cek = $sales->cekSalesorder($request->input('soid'));
 

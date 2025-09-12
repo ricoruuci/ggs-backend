@@ -432,11 +432,13 @@ class SalesOrderHd extends BaseModel
             $c = $cekrugi->flag;
         }
 
-        $result = $a . $b . $c;
+        $result = $a . $c . $b  ;
 
         if ($result == '') {
             $result = 'W';
         }
+
+       //dd($result) ;
 
         return $result;
     }
@@ -469,12 +471,13 @@ class SalesOrderHd extends BaseModel
     function updateTotal($param)
     {
         $result = DB::update(
-            'UPDATE artrpurchaseorderhd SET ttlso = :grandtotal,stso = :subtotal,ppn = :ppn WHERE poid = :soid',
+            'UPDATE artrpurchaseorderhd SET ttlso = :grandtotal,stso = :subtotal,ppn = :ppn,margin = :margin WHERE poid = :soid',
             [
                 'soid' => $param['soid'],
                 'grandtotal' => $param['grandtotal'],
                 'subtotal' => $param['subtotal'],
                 'ppn' => $param['ppn'],
+                'margin' => $param['margin']
             ]
         );
 
@@ -540,8 +543,27 @@ class SalesOrderHd extends BaseModel
         return $result;
     }
 
-    function cekMargin($soid)
+    function cekOtoMargin($userid)
     {
+        $result = DB::selectOne(
+            "SELECT isnull(otomargin,2) as otomargin from sysmsuser where userid=:userid ",
+            [
+                'userid' => $userid
+            ]
+        );
+
+        return $result;
+    }
+
+    function cekMargin($soid,$userid)
+    {
+         $cekUser = DB::selectOne(
+            "SELECT isnull(otomargin,2) as otomargin from sysmsuser where userid=:userid ",
+            [
+                'userid' => $userid
+            ]
+        );
+
         $cek = DB::selectOne(
             "SELECT  case when sum(qty*modal) = 0 then 100 else ((sum(qty*(price-modal))-(sum(qty*price)*isnull(a.disc,0)/100)-a.tbagasi)/sum(qty*modal)*100) end as pmargin
 	        from artrpurchaseorderhd a inner join artrpurchaseorderdt b 
@@ -553,11 +575,12 @@ class SalesOrderHd extends BaseModel
             ]
         );
 
-        if ($cek && $cek->pmargin < 2.5) {
+        if ($cek && $cek->pmargin < $cekUser->otomargin) {
             $result = true;
         } else {
             $result = false;
         }
+        // dd($result);
 
         return $result;
     }
