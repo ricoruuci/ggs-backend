@@ -575,12 +575,20 @@ class SalesOrderHd extends BaseModel
             ]
         );
 
-        if ($cek && $cek->pmargin < $cekUser->otomargin) {
-            $result = true;
-        } else {
-            $result = false;
-        }
-        // dd($result);
+        if ($cek) {
+    if ($cek->pmargin < 0) {
+        // Kalau margin minus, otomatis gagal
+        $result = false;
+    } elseif ($cek->pmargin < $cekUser->otomargin) {
+        // Kalau margin lebih kecil dari otomargin, gagal juga
+        $result = false;
+    } else {
+        // Kalau margin cukup, lolos
+        $result = true;
+    }
+    } else {
+        $result = false;
+    }
 
         return $result;
     }
