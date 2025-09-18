@@ -189,11 +189,7 @@ class PurchaseOrderHd extends BaseModel
 
     public function beforeAutoNumber($transdate, $fgtax)
     {
-        if ($fgtax == 'Y') {
-            $pt = 'SAS';
-        } else {
-            $pt = '1Tech';
-        }
+        $pt = 'GGS';
 
         $year = substr($transdate, 0, 4);
 
