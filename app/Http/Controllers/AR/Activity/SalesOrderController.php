@@ -462,18 +462,18 @@ class SalesOrderController extends Controller
         $OtoMargin = $sales->cekOtoMargin(Auth::user()->currentAccessToken()['namauser']);
         $cek = $sales->cekOtoLevel(Auth::user()->currentAccessToken()['namauser']);
 
-        if ($cek == False)  {
+        // if ($cek == False)  {
 
-                return $this->responseError('Anda Tidak Mempunyai Akses Otorisasi' , 400);
-            }
+        //         return $this->responseError('Anda Tidak Mempunyai Akses Otorisasi' , 400);
+        //     }
 
-        $cekpmargin = $sales->cekMargin(Auth::user()->currentAccessToken()['namauser'],$request->input('soid'));
+        // $cekpmargin = $sales->cekMargin(Auth::user()->currentAccessToken()['namauser'],$request->input('soid'));
 
-        if ($cekpmargin == False)  {
+        // if ($cekpmargin == False)  {
 
-                return $this->responseError('Anda Hanya Bisa Otorisasi Margin diatas '.$OtoMargin->otomargin , 400);
-            }
-      
+        //         return $this->responseError('Anda Hanya Bisa Otorisasi Margin diatas '.$OtoMargin->otomargin , 400);
+        //     }
+        
 
         $cek = $sales->cekSalesorder($request->input('soid'));
 
