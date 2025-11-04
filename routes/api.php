@@ -4,6 +4,7 @@ use App\Http\Controllers\AP\Master\SupplierController;
 use App\Http\Controllers\AP\Activity\KonsinyasiController;
 use App\Http\Controllers\AP\Activity\PurchaseOrderController;
 use App\Http\Controllers\AP\Activity\OtorisasiPembelianController;
+use App\Http\Controllers\AP\Activity\PembelianController;
 use App\Http\Controllers\AR\Activity\PenjualanController;
 use App\Http\Controllers\AR\Activity\SalesOrderController;
 use App\Http\Controllers\AR\Master\CustomerController;
@@ -83,6 +84,14 @@ Route::post('purchaseorder', [PurchaseOrderController::class, 'insertData'])->mi
 Route::get('purchaseorder', [PurchaseOrderController::class, 'getListData'])->middleware('auth:sanctum');
 Route::patch('purchaseorder', [PurchaseOrderController::class, 'updateAllData'])->middleware('auth:sanctum');
 Route::delete('purchaseorder', [PurchaseOrderController::class, 'deleteData'])->middleware('auth:sanctum');
+
+//Pembelian
+Route::post('pembelian', [PembelianController::class, 'insertData'])->middleware('auth:sanctum');
+Route::get('pembelian', [PembelianController::class, 'getListData'])->middleware('auth:sanctum');
+Route::patch('pembelian', [PembelianController::class, 'updateAllData'])->middleware('auth:sanctum');
+Route::delete('pembelian', [PembelianController::class, 'deleteData'])->middleware('auth:sanctum');
+Route::get('pembelian/cari-penerimaan', [PembelianController::class, 'cariPenerimaan'])->middleware('auth:sanctum');
+Route::get('pembelian/cari-detailbarang', [PembelianController::class, 'cariBarang'])->middleware('auth:sanctum');
 
 //otorisasi Pembelian
 Route::get('purchase/otorisasi', [OtorisasiPembelianController::class, 'getListOto'])->middleware('auth:sanctum');
