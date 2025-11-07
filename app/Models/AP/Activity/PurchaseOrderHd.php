@@ -256,4 +256,27 @@ class PurchaseOrderHd extends BaseModel
 
         return $result;
     }
+
+    function cariSO($param)
+    {
+        $result = DB::select(
+            "SELECT k.poid as soid,k.transdate,k.custname,k.ttlso from (
+            select a.poid,a.transdate,sum(b.qty) as total,a.jenis,c.custname,isnull(a.ttlso,0) as ttlso,
+            isnull((select sum(x.qty) from artrpenawarandt x inner join artrpenawaranhd y on x.gbuid=y.gbuid and y.flag='b' 
+            where y.soid=a.poid),0) as jumpo from artrpurchaseorderhd a inner join artrpurchaseorderdt b on a.poid=b.poid 
+            inner join armscustomer c on a.custid=c.custid group by a.poid,a.transdate,a.jenis,c.custname,a.ttlso) as k where k.total-k.jumpo > 0 and k.jenis='y' 
+            and convert(varchar(8),k.transdate,112) <= :sampai
+            and k.poid like :soidkeyword 
+            and k.custname like :custnamekeyword
+            order by k.poid ",
+            [
+                'sampai' => $param['sampai'],
+                'soidkeyword' => $param['soidkeyword'],
+                'custnamekeyword' => $param['custnamekeyword']
+            ]
+        );
+
+        return $result;
+    }
+
 }

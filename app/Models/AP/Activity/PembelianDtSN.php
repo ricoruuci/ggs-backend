@@ -28,17 +28,18 @@ class PembelianDtSN extends Model
     {
         $result = DB::insert(
             "INSERT INTO aptrpurchasedtsn
-            (purchaseid,suppid,itemid,price,snid,upddate,upduser,fgjual,fgsn)
+            (purchaseid,suppid,itemid,snid,upddate,upduser,fgjual,fgsn,warehouseid,price)
             VALUES 
-            (:purchaseid,:suppid,:itemid,:price,:snid,getdate(),:upduser,'T',:fgsn)",
+            (:purchaseid,:suppid,:itemid,:snid,getdate(),:upduser,'T',:fgsn,:warehouseid,:price)",
             [
                 'purchaseid' => $param['purchaseid'],
                 'suppid' => $param['suppid'],
                 'itemid' => $param['itemid'],
-                'price' => $param['price'],
                 'snid' => $param['snid'],
                 'upduser' => $param['upduser'],
-                'fgsn' => $param['fgsn']
+                'fgsn' => $param['fgsn'],
+                'warehouseid' => $param['warehouseid'],
+                'price' => $param['price']
             ]
         );
 
@@ -67,6 +68,22 @@ class PembelianDtSN extends Model
             'DELETE FROM aptrpurchasedtsn WHERE purchaseid = :purchaseid  ',
             [
                 'purchaseid' => $param['purchaseid']
+            ]
+        );
+
+        return $result;
+    }
+
+    function cariSN($param)
+    {
+        $result = DB::select(
+            "SELECT konsinyasiid,itemid,snid,upddate,upduser,fgjual,fgsn from APTrKonsinyasiDtSN
+            WHERE konsinyasiid = :grnid and itemid = :itemid and snid like :snidkeyword ",
+            [
+                'grnid' => $param['grnid'],
+                'itemid' => $param['itemid'],
+                'snidkeyword' => '%' . $param['snidkeyword'] . '%'
+
             ]
         );
 

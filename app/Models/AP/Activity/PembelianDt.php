@@ -31,16 +31,17 @@ class PembelianDt extends Model
 
         $result = DB::insert(
             "INSERT INTO aptrpurchasedt
-            (purchaseid,suppid,itemid,qty,price,disc,upddate,upduser)
+            (purchaseid,suppid,itemid,qty,price,disc,upddate,upduser,warehouseid)
             VALUES 
-            (:purchaseid,:suppid,:itemid,:qty,:price,0,getdate(),:upduser)",
+            (:purchaseid,:suppid,:itemid,:qty,:price,0,getdate(),:upduser,:warehouseid)",
             [
                 'purchaseid' => $param['purchaseid'],
                 'suppid' => $param['suppid'],
                 'itemid' => $param['itemid'],
                 'qty' => $param['qty'],
                 'price' => $param['price'],
-                'upduser' => $param['upduser']
+                'upduser' => $param['upduser'],
+                'warehouseid' => $param['warehouseid']
             ]
         );
 
@@ -52,9 +53,11 @@ class PembelianDt extends Model
         $detailsn = new PembelianDtSN();
 
         $result = DB::select(
-            "SELECT a.purchaseid,a.itemid,b.itemname,a.qty,a.price,isnull(a.price*a.qty,0) as total,a.upduser,a.upddate
+            "SELECT a.purchaseid,a.itemid,b.itemname,a.qty,a.price,isnull(a.price*a.qty,0) as total,a.upduser,a.upddate,a.warehouseid,c.warehousename
             from aptrpurchasedt a
-            inner join inmsitem b on a.itemid=b.itemid  WHERE a.purchaseid = :purchaseid ",
+            inner join inmsitem b on a.itemid=b.itemid
+            inner join inmswarehouse c on a.warehouseid=c.warehouseid
+            WHERE a.purchaseid = :purchaseid ",
             [
                 'purchaseid' => $param['purchaseid']
             ]
@@ -89,15 +92,17 @@ class PembelianDt extends Model
     function cariBarang($param)
     {
         $result = DB::select(
-            "SELECT  b.itemname,a.itemid,a.price,a.qty
+            "SELECT  b.itemname,a.itemid,a.price,a.qty,c.warehouseid,d.warehousename
             from aptrkonsinyasidt a 
             inner join inmsitem b on a.itemid=b.itemid 
-            where a.konsinyasiid=:konsinyasiid
+			inner join APTrKonsinyasiHd c  on a.KonsinyasiID=c.KonsinyasiID
+			inner join INMsWarehouse d on c.warehouseid=d.warehouseid
+            where a.konsinyasiid=:grnid
             and a.itemid not in (select itemid from aptrpurchasedt where purchaseid=:purchaseid) 
             and a.itemid like :itemidkeyword and b.itemname like :itemnamekeyword
             order by a.konsinyasiid ",
             [
-                'konsinyasiid' => $param['konsinyasiid'],
+                'grnid' => $param['grnid'],
                 'purchaseid' => $param['purchaseid'],
                 'itemidkeyword' => '%' . $param['itemidkeyword'] . '%',
                 'itemnamekeyword' => '%' . $param['itemnamekeyword'] . '%'
@@ -118,11 +123,11 @@ class PembelianDt extends Model
             where d.itemid=a.itemid and e.konsinyasiid=a.konsinyasiid and d.purchaseid <> :purchaseid) as sisa from aptrkonsinyasidt a 
             inner join aptrkonsinyasihd b on a.konsinyasiid=b.konsinyasiid inner join inmsitem c on a.itemid=c.itemid
             left join aptrpurchasehd e on b.konsinyasiid=e.konsinyasiid) as k 
-            where  k.sisa <> 0 and k.konsinyasiid=:konsinyasiid and k.itemid = :itemid 
+            where  k.sisa <> 0 and k.konsinyasiid=:grnid and k.itemid = :itemid 
             order by k.konsinyasiid ",
             [
                 'purchaseid' => $purchaseid,
-                'konsinyasiid' => $konsinyasid,
+                'grnid' => $konsinyasid,
                 'itemid' => $itemid
             ]
         );

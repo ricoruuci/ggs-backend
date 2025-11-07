@@ -68,15 +68,16 @@ class PembelianController extends Controller
             $rekhpp = $samsset->sHPP;
             $fgtax = $samsset->FgTax;
             $nilaitax = $samsset->NilaiTax;
+            $dgpb = $samsset->DGPb;
 
             $insertheader = $pembelian->insertData([
-                'purchaseid' => $params['purchaseid'],
-                'konsinyasiid' => $request->input('konsinyasiid'),
+                'purchaseid' => $request['purchaseid'],
+                'grnid' => $request->input('grnid'),
                 'transdate' => $request->input('transdate'),
                 'suppid' => $request->input('suppid'),
                 'nofps' => $request->input('nofps') ?? '',
                 'fgtax' => $request->input('fgtax') ?? $fgtax,
-                'ppn' => $request->input('nilaitax') ?? $nilaitax,
+                'nilaitax' => $request->input('nilaitax') ?? $nilaitax,
                 'jatuhtempo' => $request->input('jatuhtempo') ?? '',
                 'note' => $request->input('note') ?? '',
                 'upduser' => Auth::user()->currentAccessToken()['namauser'],
@@ -114,7 +115,7 @@ class PembelianController extends Controller
                     return $this->responseError('kode barang tidak terdaftar dalam master', 400);
                 }
 
-                $cek = $modelDetail->cekSudahBeli($hasilpurchaseid, $request->input('konsinyasiid'), $arrDetail[$i]['itemid'], $arrDetail[$i]['qty']);
+                $cek = $modelDetail->cekSudahBeli($request->input('purchaseid'), $request->input('grnid'), $arrDetail[$i]['itemid'], $arrDetail[$i]['qty']);
 
                 if ($cek == false) {
 
@@ -124,11 +125,12 @@ class PembelianController extends Controller
                 }
                 //dd(var_dump($konsinyasiid));
                 $insertdetail = $modelDetail->insertData([
-                    'purchaseid' => $hasilpurchaseid,
+                    'purchaseid' => $request->input('purchaseid'),
                     'suppid' => $request->input('suppid'),
                     'itemid' => $arrDetail[$i]['itemid'],
                     'qty' => $arrDetail[$i]['qty'] ?? 1,
                     'price' => $arrDetail[$i]['price'] ?? 0,
+                    'warehouseid' => $arrDetail[$i]['warehouseid'] ?? $dgpb,
                     'upduser' => Auth::user()->currentAccessToken()['namauser']
                 ]);
 
@@ -163,11 +165,13 @@ class PembelianController extends Controller
 
 
                         $insertdetail = $modelSn->insertData([
-                            'purchaseid' => $hasilpurchaseid,
+                            'purchaseid' => $request->input('purchaseid'),
                             'suppid' =>  $request->input('suppid'),
                             'itemid' => $arrDetail[$i]['itemid'],
                             'snid' => $arrDetailSn[$u]['snid'],
-                            'price' => $arrDetail[$i]['price'],
+                            'fgsn' => $arrDetailSn[$u]['fgsn'] ?? 'T',
+                            'warehouseid' => $arrDetail[$i]['warehouseid'] ?? $dgpb,  
+                            'price' => $arrDetail[$i]['price'] ?? 0,  
                             'upduser' => Auth::user()->currentAccessToken()['namauser']
                         ]);
 
@@ -197,7 +201,7 @@ class PembelianController extends Controller
             //dd(var_dump($hitung));
             DB::commit();
 
-            return $this->responseSuccess('insert berhasil', 200, ['purchaseid' => $hasilpurchaseid]);
+            return $this->responseSuccess('insert berhasil', 200, ['purchaseid' => $request->input('purchaseid')]);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -281,16 +285,17 @@ class PembelianController extends Controller
         $rekhpp = $samsset->sHPP;
         $fgtax = $samsset->FgTax;
         $nilaitax = $samsset->NilaiTax;
+        $dgpb = $samsset->DGPb;
 
         try {
             $insertheader = $pembelian->updateAllData([
-                'purchaseid' => $params['purchaseid'],
-                'konsinyasiid' => $request->input('konsinyasiid'),
+                'purchaseid' => $request['purchaseid'],
+                'grnid' => $request->input('grnid'),
                 'transdate' => $request->input('transdate'),
                 'suppid' => $request->input('suppid'),
                 'nofps' => $request->input('nofps') ?? '',
                 'fgtax' => $request->input('fgtax') ?? $fgtax,
-                'ppn' => $request->input('nilaitax') ?? $nilaitax,
+                'nilaitax' => $request->input('nilaitax') ?? $nilaitax,
                 'jatuhtempo' => $request->input('jatuhtempo') ?? '',
                 'note' => $request->input('note') ?? '',
                 'upduser' => Auth::user()->currentAccessToken()['namauser'],
@@ -332,7 +337,7 @@ class PembelianController extends Controller
                     return $this->responseError('kode barang tidak terdaftar dalam master', 400);
                 }
 
-                $cek = $modelDetail->cekSudahBeli($request->input('purchaseid'), $request->input('konsinyasiid'), $arrDetail[$i]['itemid'], $arrDetail[$i]['qty']);
+                $cek = $modelDetail->cekSudahBeli($request->input('purchaseid'), $request->input('grnid'), $arrDetail[$i]['itemid'], $arrDetail[$i]['qty']);
 
                 if ($cek == false) {
 
@@ -347,7 +352,8 @@ class PembelianController extends Controller
                     'itemid' => $arrDetail[$i]['itemid'],
                     'qty' => $arrDetail[$i]['qty'],
                     'price' => $arrDetail[$i]['price'],
-                    'upduser' => Auth::user()->currentAccessToken()['namauser']
+                    'upduser' => Auth::user()->currentAccessToken()['namauser'],
+                    'warehouseid' => $arrDetail[$i]['warehouseid'] ?? $dgpb
                 ]);
 
                 if ($insertdetail == false) {
@@ -383,7 +389,9 @@ class PembelianController extends Controller
                             'suppid' => $request->input('suppid'),
                             'itemid' => $arrDetail[$i]['itemid'],
                             'snid' => $arrDetailSn[$u]['snid'],
-                            'price' => $arrDetail[$i]['price'],
+                            'fgsn' => $arrDetailSn[$u]['fgsn'] ?? 'T',
+                            'warehouseid' => $arrDetail[$i]['warehouseid'] ?? $dgpb,
+                            'price' => $arrDetail[$i]['price'] ?? 0,
                             'upduser' => Auth::user()->currentAccessToken()['namauser']
                         ]);
 
@@ -449,7 +457,7 @@ class PembelianController extends Controller
                     'dari' => $request->input('dari'),
                     'sampai' => $request->input('sampai'),
                     'purchaseidkeyword' => $request->input('purchaseidkeyword') ?? '',
-                    'konsinyasiidkeyword' => $request->input('konsinyasiidkeyword') ?? '',
+                    'grnidkeyword' => $request->input('grnidkeyword') ?? '',
                     'suppidkeyword' => $request->input('suppidkeyword') ?? '',
                     'suppnamekeyword' => $request->input('suppnamekeyword') ?? '',
                     'custidkeyword' => $request->input('custidkeyword') ?? '',
@@ -472,7 +480,7 @@ class PembelianController extends Controller
         $result = $pembelian->cariPenerimaan(
             [
                 'transdate' => $request->input('transdate') ?? '',
-                'konsinyasiidkeyword' => $request->input('konsinyasiidkeyword') ?? '',
+                'grnidkeyword' => $request->input('grnidkeyword') ?? '',
                 'suppnamekeyword' => $request->input('suppnamekeyword') ?? '',
                 'suppidkeyword' => $request->input('suppidkeyword') ?? '',
                 'sortby' => $request->input('sortby') ?? 'dateold'
@@ -490,7 +498,7 @@ class PembelianController extends Controller
 
         $result = $pembelian->cariBarang(
             [
-                'konsinyasiid' => $request->input('konsinyasiid'),
+                'grnid' => $request->input('grnid'),
                 'purchaseid' => $request->input('purchaseid'),
                 'itemidkeyword' => $request->input('itemidkeyword') ?? '',
                 'itemnamekeyword' => $request->input('itemnamekeyword') ?? '',
@@ -535,4 +543,23 @@ class PembelianController extends Controller
             return $this->responseError($e->getMessage(), 400);
         }
     }
+
+    public function cariSN(Request $request)
+    {
+        $modelSn = new PembelianDtSN();
+
+        $result = $modelSn->cariSN(
+            [
+                'grnid' => $request->input('grnid'),
+                'itemid' => $request->input('itemid'),
+                'snidkeyword' => $request->input('snidkeyword') ?? '',
+            ]
+        );
+
+        $resultPaginated = $this->arrayPaginator($request, $result);
+
+        return $this->responsePagination($resultPaginated);
+    }
+    
+
 }

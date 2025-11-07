@@ -81,6 +81,28 @@ class PurchaseOrderDt extends Model
 
         return $result;
     }
+
+    function cariBarang($param)
+    {
+        $result = DB::select(
+            "SELECT l.itemname,k.price,k.keterangan,k.itemid,k.qty as jumso,k.jumpo,k.qty-k.jumpo as sisa,l.uomid from (
+            select a.poid,isnull(a.modal,0) as price,isnull(a.qty,0) as qty,a.itemid,a.keterangan,isnull((select sum(x.qty) from artrpenawarandt x 
+            inner join artrpenawaranhd y on x.gbuid=y.gbuid and y.flag='b' where y.soid=a.poid and x.itemid=a.itemid),0) as jumpo 
+            from artrpurchaseorderdt a) as k inner join inmsitem l on k.itemid=l.itemid 
+            where k.qty-k.jumpo > 0 and  k.poid='' 
+            order by k.itemid
+            and k.poid like :soidkeyword 
+            and k.custname like :custnamekeyword
+            order by k.poid ",
+            [
+                'sampai' => $param['sampai'],
+                'soidkeyword' => $param['soidkeyword'],
+                'custnamekeyword' => $param['custnamekeyword']
+            ]
+        );
+
+        return $result;
+    }
 }
 
 ?>

@@ -92,6 +92,7 @@ Route::patch('pembelian', [PembelianController::class, 'updateAllData'])->middle
 Route::delete('pembelian', [PembelianController::class, 'deleteData'])->middleware('auth:sanctum');
 Route::get('pembelian/cari-penerimaan', [PembelianController::class, 'cariPenerimaan'])->middleware('auth:sanctum');
 Route::get('pembelian/cari-detailbarang', [PembelianController::class, 'cariBarang'])->middleware('auth:sanctum');
+Route::get('pembelian/cari-sn', [PembelianController::class, 'cariSN'])->middleware('auth:sanctum');
 
 //otorisasi Pembelian
 Route::get('purchase/otorisasi', [OtorisasiPembelianController::class, 'getListOto'])->middleware('auth:sanctum');

@@ -18,13 +18,15 @@ class PembelianHd extends BaseModel
     public $timestamps = false;
 
     public static $rulesInsert = [
-        'konsinyasiid' => 'required',
+        'purchaseid' => 'required',
+        'grnid' => 'required',
         'transdate' => 'required',
         'suppid' => 'required'
     ];
 
     public static $messagesInsert = [
-        'konsinyasiid' => 'Kolom nota penerimaan harus diisi.',
+        'purchaseid' => 'Kolom nomor pembelian harus diisi.',
+        'grnid' => 'Kolom nota penerimaan harus diisi.',
         'transdate' => 'Kolom tanggal transaksi harus diisi.',
         'suppid' => 'Kolom kode supplier harus diisi.',
         'transdate' => 'Kolom tanggal transaksi harus diisi.',
@@ -48,12 +50,12 @@ class PembelianHd extends BaseModel
             "INSERT INTO aptrpurchasehd 
            (purchaseid,transdate,currid,fpsid,konsinyasiid,suppid,nilaitax,fgtax,note,jatuhtempo,upddate,upduser,rekeningp,rekeningu,rekeningk,rekpersediaan,rekhpp,fgoto,npwp,rate)
             VALUES 
-           (:purchaseid,:transdate,'IDR',:nofps,:konsinyasiid,:suppid,:nilaitax,:fgtax,:note,:jatuhtempo,getdate(),:upduser,:rekeningp,:rekeningu,:rekeningk,:rekpersediaan,:rekhpp,'T',:npwp,1)",
+           (:purchaseid,:transdate,'IDR',:nofps,:grnid,:suppid,:nilaitax,:fgtax,:note,:jatuhtempo,getdate(),:upduser,:rekeningp,:rekeningu,:rekeningk,:rekpersediaan,:rekhpp,'T',:npwp,1)",
             [
                 'purchaseid' => $param['purchaseid'],
                 'transdate' => $param['transdate'],
                 'nofps' => $param['nofps'],
-                'konsinyasiid' => $param['konsinyasiid'],
+                'grnid' => $param['grnid'],
                 'suppid' => $param['suppid'],
                 'nilaitax' => $param['nilaitax'] ,
                 'fgtax' => $param['fgtax'] ,
@@ -78,7 +80,7 @@ class PembelianHd extends BaseModel
             'UPDATE aptrpurchasehd SET 
             transdate = :transdate,
             fpsid = :nofps,
-            konsinyasiid = :konsinyasiid,
+            konsinyasiid = :grnid,
             suppid = :suppid,
             nilaitax = :nilaitax,
             fgtax = :fgtax,
@@ -98,7 +100,7 @@ class PembelianHd extends BaseModel
                 'purchaseid' => $param['purchaseid'],
                 'transdate' => $param['transdate'],
                 'nofps' => $param['nofps'],
-                'konsinyasiid' => $param['konsinyasiid'],
+                'grnid' => $param['grnid'],
                 'suppid' => $param['suppid'],
                 'nilaitax' => $param['nilaitax'],
                 'fgtax' => $param['fgtax'],
@@ -130,7 +132,7 @@ class PembelianHd extends BaseModel
 
         $result = DB::select(
             "SELECT a.purchaseid,isnull(a.fpsid,'') as fpsid,a.transdate,b.suppid,b.suppname,isnull(e.custid,'') as custid,isnull(d.soid+' - '+f.custname,'') as custname,
-            a.konsinyasiid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,a.upduser,a.upddate,
+            a.konsinyasiid as grnidid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,a.upduser,a.upddate,
             isnull((select sum(x.qty*x.price) from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) as subtotal,
             a.nilaitax,a.fgtax,
             case when a.fgtax = 't' then 0 else isnull((select sum(x.qty*x.price) * a.nilaitax * 0.01 from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) end as taxamount,
@@ -143,7 +145,7 @@ class PembelianHd extends BaseModel
             left join armscustomer f on f.custid=e.custid
             where convert(varchar(10),a.transdate,112) between :dari and :sampai 
             and isnull(a.purchaseid,'') like :purchaseidkeyword 
-            and isnull(a.konsinyasiid,'') like :konsinyasiidkeyword 
+            and isnull(a.konsinyasiid,'') like :grnidkeyword 
             and isnull(a.suppid,'') like :suppidkeyword 
             and isnull(b.suppname,'') like :suppnamekeyword 
             and isnull(c.poid,'') like :poidkeyword
@@ -154,7 +156,7 @@ class PembelianHd extends BaseModel
                 'dari' => $param['dari'],
                 'sampai' => $param['sampai'],
                 'purchaseidkeyword' => '%' . $param['purchaseidkeyword'] . '%',
-                'konsinyasiidkeyword' => '%' . $param['konsinyasiidkeyword'] . '%',
+                'grnidkeyword' => '%' . $param['grnidkeyword'] . '%',
                 'suppidkeyword' => '%' . $param['suppidkeyword'] . '%',
                 'suppnamekeyword' => '%' . $param['suppnamekeyword'] . '%',
                 'custidkeyword' => '%' . $param['custidkeyword'] . '%',
@@ -170,7 +172,7 @@ class PembelianHd extends BaseModel
     {
         $result = DB::selectOne(
             "SELECT a.purchaseid,isnull(a.fpsid,'') as fpsid,a.transdate,b.suppid,b.suppname,isnull(e.custid,'') as custid,isnull(d.soid+' - '+f.custname,'') as custname,
-            a.konsinyasiid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,a.upduser,a.upddate,
+            a.konsinyasiid as grnid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,a.upduser,a.upddate,
             isnull((select sum(x.qty*x.price) from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) as subtotal,
             a.nilaitax,a.fgtax,
             case when a.fgtax = 't' then 0 else isnull((select sum(x.qty*x.price) * a.nilaitax * 0.01 from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) end as taxamount,
@@ -233,7 +235,7 @@ class PembelianHd extends BaseModel
         }
 
         $result = DB::select(
-            "SELECT a.konsinyasiid,a.transdate,a.poid,a.suppid,c.suppname as suppname,d.poid+' - '+e.custname as custname
+            "SELECT a.konsinyasiid as grnid,a.transdate,a.poid,a.suppid,c.suppname as suppname,d.poid+' - '+e.custname as custname
             from aptrkonsinyasihd a 
             inner join artrpenawaranhd b on a.poid=b.gbuid and a.suppid=b.custid and a.suppid=b.custid and b.flag='b'
             inner join apmssupplier c on a.suppid=c.suppid and b.custid=c.suppid
@@ -241,7 +243,7 @@ class PembelianHd extends BaseModel
 			left join ARMsCustomer e on e.custid=d.CustID
             where isnull(a.poid,'')<>'' and a.konsinyasiid not in (select isnull(konsinyasiid,'') from aptrpurchasehd)  and
             convert(varchar(10),a.transdate,112) <= :transdate
-            and isnull(a.konsinyasiid,'') like :konsinyasiidkeyword
+            and isnull(a.konsinyasiid,'') like :grnidkeyword
             and isnull(a.suppid,'') like :suppidkeyword
             and isnull(c.suppname,'') like :suppnamekeyword
             order by $order",
@@ -249,7 +251,7 @@ class PembelianHd extends BaseModel
                 'transdate' => $param['transdate'],
                 'suppnamekeyword' => '%' . $param['suppnamekeyword'] . '%',
                 'suppidkeyword' => '%' . $param['suppidkeyword'] . '%',
-                'konsinyasiidkeyword' => '%' . $param['konsinyasiidkeyword'] . '%'
+                'grnidkeyword' => '%' . $param['grnidkeyword'] . '%'
             ]
         );
 
@@ -273,9 +275,9 @@ class PembelianHd extends BaseModel
     {
 
         $result = DB::selectOne(
-            'SELECT * from aptrkonsinyasihd WHERE konsinyasiid = :konsinyasiid',
+            'SELECT * from aptrkonsinyasihd WHERE konsinyasiid = :grnid',
             [
-                'konsinyasiid' => $konsinyasiid
+                'grnid' => $konsinyasiid
             ]
         );
 
@@ -285,9 +287,9 @@ class PembelianHd extends BaseModel
     function hitungTotal($param)
     {
 
-        $result = DB::selectONe(
+        $result = DB::selectOne(
             "SELECT k.subtotal,case when fgtax='y' then k.subtotal*k.nilaitax*0.01 else 0 end as ppn,
-            case when fgtax='y' then k.subtotal + k.subtotal*k.nilaitax*0.01 else k.subtotal end gt
+            case when fgtax='y' then k.subtotal + k.subtotal*k.nilaitax*0.01 else k.subtotal end total
             from (
             select a.purchaseid,a.suppid,b.fgtax,isnull(sum(price*qty)-sum(price*qty*disc*0.01),0) as subtotal,b.nilaitax
             from aptrpurchasedt a inner join aptrpurchasehd b on a.purchaseid=b.purchaseid
