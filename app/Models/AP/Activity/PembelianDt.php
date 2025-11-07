@@ -92,18 +92,20 @@ class PembelianDt extends Model
     function cariBarang($param)
     {
         $result = DB::select(
-            "SELECT  b.itemname,a.itemid,a.price,a.qty,c.warehouseid,d.warehousename
-            from aptrkonsinyasidt a 
-            inner join inmsitem b on a.itemid=b.itemid 
-			inner join APTrKonsinyasiHd c  on a.KonsinyasiID=c.KonsinyasiID
-			inner join INMsWarehouse d on c.warehouseid=d.warehouseid
-            where a.konsinyasiid=:grnid
-            and a.itemid not in (select itemid from aptrpurchasedt where purchaseid=:purchaseid) 
-            and a.itemid like :itemidkeyword and b.itemname like :itemnamekeyword
-            order by a.konsinyasiid ",
+            "SELECT k.itemid,k.itemname,k.qty as jumgrn,k.juminv,isnull(k.sisa,0) as sisa from (
+            select a.konsinyasiid,a.itemid,c.itemname,b.suppid,a.qty,
+			(select isnull(sum(qty),0) from aptrpurchasedt d 
+            where d.itemid=a.itemid and e.konsinyasiid=a.konsinyasiid and d.purchaseid <> :purchaseid) as juminv,
+            isnull(a.qty,0)-(select isnull(sum(qty),0) from aptrpurchasedt d 
+            where d.itemid=a.itemid and e.konsinyasiid=a.konsinyasiid and d.purchaseid <> :purchaseid1) as sisa from aptrkonsinyasidt a 
+            inner join aptrkonsinyasihd b on a.konsinyasiid=b.konsinyasiid inner join inmsitem c on a.itemid=c.itemid
+            left join aptrpurchasehd e on b.konsinyasiid=e.konsinyasiid) as k 
+            where  k.sisa <> 0 and k.konsinyasiid=:grnid and k.itemid like :itemidkeyword and k.itemname like :itemnamekeyword
+            order by k.konsinyasiid ",
             [
                 'grnid' => $param['grnid'],
                 'purchaseid' => $param['purchaseid'],
+                'purchaseid1' => $param['purchaseid'],
                 'itemidkeyword' => '%' . $param['itemidkeyword'] . '%',
                 'itemnamekeyword' => '%' . $param['itemnamekeyword'] . '%'
 

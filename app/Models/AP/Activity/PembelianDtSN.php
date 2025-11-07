@@ -77,7 +77,7 @@ class PembelianDtSN extends Model
     function cariSN($param)
     {
         $result = DB::select(
-            "SELECT konsinyasiid,itemid,snid,upddate,upduser,fgjual,fgsn from APTrKonsinyasiDtSN
+            "SELECT konsinyasiid as grnid,itemid,snid,upddate,upduser,fgjual,fgsn from APTrKonsinyasiDtSN
             WHERE konsinyasiid = :grnid and itemid = :itemid and snid like :snidkeyword ",
             [
                 'grnid' => $param['grnid'],
