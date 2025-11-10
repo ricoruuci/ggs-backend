@@ -495,9 +495,9 @@ class PembelianController extends Controller
     public function cariBarang(Request $request)
     {
         $pembelian = new PembelianDt();
-        $pembeliansn = new PembelianDtSN();
+        // $pembeliansn = new PembelianDtSN();
 
-        $resultdt = $pembelian->cariBarang(
+        $result = $pembelian->cariBarang(
             [
                 'grnid' => $request->input('grnid'),
                 'purchaseid' => $request->input('purchaseid'),
@@ -506,18 +506,18 @@ class PembelianController extends Controller
             ]
         );
 
-        $resultsn = $pembeliansn->cariSN(
-            [
-                'grnid' => $request->input('grnid'),
-                'itemid' => $resultdt[0]->itemid ?? '',
-                'snidkeyword' => $request->input('snidkeyword') ?? '',
-            ]
-        );
+        // $resultsn = $pembeliansn->cariSN(
+        //     [
+        //         'grnid' => $request->input('grnid'),
+        //         'itemid' => $resultdt[0]->itemid ?? '',
+        //         'snidkeyword' => $request->input('snidkeyword') ?? '',
+        //     ]
+        // );
 
-        $result = [
-            'detail' => $resultdt,
-            'detailsn' => $resultsn
-        ];
+        // $result = [
+        //     'detail' => $resultdt,
+        //     'detailsn' => $resultsn
+        // ];
 
 
 

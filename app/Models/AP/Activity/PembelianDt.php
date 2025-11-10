@@ -91,6 +91,8 @@ class PembelianDt extends Model
 
     function cariBarang($param)
     {
+        $detailsn = new PembelianDtSN();
+        
         $result = DB::select(
             "SELECT k.itemid,k.itemname,k.qty as jumgrn,k.juminv,isnull(k.sisa,0) as sisa from (
             select a.konsinyasiid,a.itemid,c.itemname,b.suppid,a.qty,
@@ -111,6 +113,17 @@ class PembelianDt extends Model
 
             ]
         );
+
+         foreach ($result as $data) {
+
+            $datadetailResult = $detailsn->cariSN([
+                'grnid' => $param['grnid'],
+                'itemid' => $data->itemid,
+                'snidkeyword' => $param['snidkeyword'] ?? ''    
+            ]);
+
+            $data->detailsn = $datadetailResult;
+        }
 
         return $result;
     }
