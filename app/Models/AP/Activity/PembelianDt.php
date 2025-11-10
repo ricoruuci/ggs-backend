@@ -94,8 +94,8 @@ class PembelianDt extends Model
         $detailsn = new PembelianDtSN();
         
         $result = DB::select(
-            "SELECT k.itemid,k.itemname,k.qty as jumgrn,k.juminv,isnull(k.sisa,0) as sisa from (
-            select a.konsinyasiid,a.itemid,c.itemname,b.suppid,a.qty,
+            "SELECT k.itemid,k.itemname,k.qty as jumgrn,k.juminv,isnull(k.sisa,0) as sisa,k.price,isnull(k.sisa,0)*k.price as total from (
+            select a.konsinyasiid,a.itemid,c.itemname,b.suppid,a.qty,a.price,
 			(select isnull(sum(qty),0) from aptrpurchasedt d 
             where d.itemid=a.itemid and e.konsinyasiid=a.konsinyasiid and d.purchaseid <> :purchaseid) as juminv,
             isnull(a.qty,0)-(select isnull(sum(qty),0) from aptrpurchasedt d 
