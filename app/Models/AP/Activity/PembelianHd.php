@@ -50,7 +50,7 @@ class PembelianHd extends BaseModel
             "INSERT INTO aptrpurchasehd 
            (purchaseid,transdate,currid,fpsid,konsinyasiid,suppid,nilaitax,fgtax,note,jatuhtempo,upddate,upduser,rekeningp,rekeningu,rekeningk,rekpersediaan,rekhpp,fgoto,npwp,rate)
             VALUES 
-           (:purchaseid,:transdate,'IDR',:nofps,:grnid,:suppid,:nilaitax,:fgtax,:note,:jatuhtempo,getdate(),:upduser,:rekeningp,:rekeningu,:rekeningk,:rekpersediaan,:rekhpp,'T',:npwp,1)",
+           (:purchaseid,:transdate,:currid,:nofps,:grnid,:suppid,:nilaitax,:fgtax,:note,:jatuhtempo,getdate(),:upduser,:rekeningp,:rekeningu,:rekeningk,:rekpersediaan,:rekhpp,'T',:npwp,:rate)",
             [
                 'purchaseid' => $param['purchaseid'],
                 'transdate' => $param['transdate'],
@@ -67,7 +67,9 @@ class PembelianHd extends BaseModel
                 'rekeningu' => $param['rekeningu'],
                 'rekeningk' => $param['rekeningk'],
                 'rekpersediaan' => $param['rekpersediaan'],
-                'rekhpp' => $param['rekhpp']
+                'rekhpp' => $param['rekhpp'],
+                'currid' => $param['currid'],
+                'rate' => $param['rate'],
             ]
         );
 
@@ -93,7 +95,9 @@ class PembelianHd extends BaseModel
             rekeningu = :rekeningu,
             rekeningk = :rekeningk,
             rekpersediaan = :rekpersediaan,
-            rekhpp = :rekhpp
+            rekhpp = :rekhpp,
+            rate = :rate,
+            currid = :currid
             
             WHERE purchaseid = :purchaseid ',
             [
@@ -112,7 +116,9 @@ class PembelianHd extends BaseModel
                 'rekeningu' => $param['rekeningu'],
                 'rekeningk' => $param['rekeningk'],
                 'rekpersediaan' => $param['rekpersediaan'],
-                'rekhpp' => $param['rekhpp']
+                'rekhpp' => $param['rekhpp'],
+                'currid' => $param['currid'],
+                'rate' => $param['rate'],
             ]
         );
 
@@ -132,7 +138,8 @@ class PembelianHd extends BaseModel
 
         $result = DB::select(
             "SELECT a.purchaseid,isnull(a.fpsid,'') as fpsid,a.transdate,b.suppid,b.suppname,isnull(e.custid,'') as custid,isnull(d.soid+' - '+f.custname,'') as custname,
-            a.konsinyasiid as grnidid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,a.upduser,a.upddate,
+            a.konsinyasiid as grnidid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,
+            a.rate,a.currid,a.upduser,a.upddate,
             isnull((select sum(x.qty*x.price) from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) as subtotal,
             a.nilaitax,a.fgtax,
             case when a.fgtax = 't' then 0 else isnull((select sum(x.qty*x.price) * a.nilaitax * 0.01 from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) end as taxamount,
@@ -172,7 +179,8 @@ class PembelianHd extends BaseModel
     {
         $result = DB::selectOne(
             "SELECT a.purchaseid,isnull(a.fpsid,'') as fpsid,a.transdate,b.suppid,b.suppname,isnull(e.custid,'') as custid,isnull(d.soid+' - '+f.custname,'') as custname,
-            a.konsinyasiid as grnid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,a.upduser,a.upddate,
+            a.konsinyasiid as grnid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,
+            a.rate,a.currid,a.upduser,a.upddate,
             isnull((select sum(x.qty*x.price) from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) as subtotal,
             a.nilaitax,a.fgtax,
             case when a.fgtax = 't' then 0 else isnull((select sum(x.qty*x.price) * a.nilaitax * 0.01 from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) end as taxamount,

@@ -87,6 +87,8 @@ class PembelianController extends Controller
                 'rekeningk' => $request->input('rekeningk') ?? $rekeningk,
                 'rekpersediaan' => $request->input('rekpersediaan') ?? $rekpersediaan,
                 'rekhpp' => $request->input('rekhpp') ?? $rekhpp,
+                'rate' => $request->input('rate') ?? 1,
+                'currid' => $request->input('currid') ?? 'IDR'
 
             ]);
 
@@ -304,7 +306,9 @@ class PembelianController extends Controller
                 'rekeningu' => $request->input('rekeningu') ?? $rekeningu,
                 'rekeningk' => $request->input('rekeningk') ?? $rekeningk,
                 'rekpersediaan' => $request->input('rekpersediaan') ?? $rekpersediaan,
-                'rekhpp' => $request->input('rekhpp') ?? $rekhpp
+                'rekhpp' => $request->input('rekhpp') ?? $rekhpp,
+                'rate' => $request->input('rate') ?? 1,
+                'currid' => $request->input('currid') ?? 'IDR'
             ]);
 
             if ($insertheader == false) {
