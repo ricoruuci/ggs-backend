@@ -138,7 +138,7 @@ class PembelianHd extends BaseModel
 
         $result = DB::select(
             "SELECT a.purchaseid,isnull(a.fpsid,'') as fpsid,a.transdate,b.suppid,b.suppname,isnull(e.custid,'') as custid,isnull(d.soid+' - '+f.custname,'') as custname,
-            a.konsinyasiid as grnidid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,
+            a.konsinyasiid as grnid,isnull(c.poid,'') as poid,isnull(a.note,'') as note,a.jatuhtempo,a.Transdate + isnull(a.JatuhTempo,0) as tgljatuhtempo,
             a.rate,a.currid,a.upduser,a.upddate,
             isnull((select sum(x.qty*x.price) from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) as subtotal,
             a.nilaitax,a.fgtax,
