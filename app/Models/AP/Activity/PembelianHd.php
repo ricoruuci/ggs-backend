@@ -143,7 +143,7 @@ class PembelianHd extends BaseModel
             isnull((select sum(x.qty*x.price) from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) as subtotal,
             a.nilaitax,a.fgtax,
             case when a.fgtax = 't' then 0 else isnull((select sum(x.qty*x.price) * a.nilaitax * 0.01 from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) end as taxamount,
-            a.ttlpb as grandtotal,a.fgoto,case when a.fgoto='t' then 'Belum Otorisasi' else 'Sudah Otorisasi' end as statusoto,isnull(a.npwp,'') as npwp
+            a.ttlpb as grandtotal,a.fgoto,case when a.fgoto='t' then 'Belum Otorisasi' else 'Sudah Otorisasi' end as statusoto,isnull(a.npwp,'') as npwp,a.otoby,a.otodate
             from aptrpurchasehd a
             inner join apmssupplier b on a.suppid=b.suppid
             inner join aptrkonsinyasihd c on a.konsinyasiid=c.konsinyasiid
@@ -184,7 +184,7 @@ class PembelianHd extends BaseModel
             isnull((select sum(x.qty*x.price) from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) as subtotal,
             a.nilaitax,a.fgtax,
             case when a.fgtax = 't' then 0 else isnull((select sum(x.qty*x.price) * a.nilaitax * 0.01 from aptrpurchasedt x where x.purchaseid=a.purchaseid),0) end as taxamount,
-            a.ttlpb as grandtotal,a.fgoto,case when a.fgoto='t' then 'Belum Otorisasi' else 'Sudah Otorisasi' end as statusoto,isnull(a.npwp,'') as npwp
+            a.ttlpb as grandtotal,a.fgoto,case when a.fgoto='t' then 'Belum Otorisasi' else 'Sudah Otorisasi' end as statusoto,isnull(a.npwp,'') as npwp,a.otoby,a.otodate
             from aptrpurchasehd a
             inner join apmssupplier b on a.suppid=b.suppid
             inner join aptrkonsinyasihd c on a.konsinyasiid=c.konsinyasiid
