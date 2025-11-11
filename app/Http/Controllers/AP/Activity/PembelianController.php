@@ -504,7 +504,6 @@ class PembelianController extends Controller
         $result = $pembelian->cariBarang(
             [
                 'grnid' => $request->input('grnid'),
-                'purchaseid' => $request->input('purchaseid'),
                 'itemidkeyword' => $request->input('itemidkeyword') ?? '',
                 'itemnamekeyword' => $request->input('itemnamekeyword') ?? '',
             ]

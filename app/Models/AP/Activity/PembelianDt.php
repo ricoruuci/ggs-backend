@@ -97,17 +97,15 @@ class PembelianDt extends Model
             "SELECT k.itemid,k.itemname,k.qty as jumgrn,k.juminv,isnull(k.sisa,0) as sisa,k.price,isnull(k.sisa,0)*k.price as total from (
             select a.konsinyasiid,a.itemid,c.itemname,b.suppid,a.qty,a.price,
 			(select isnull(sum(qty),0) from aptrpurchasedt d 
-            where d.itemid=a.itemid and e.konsinyasiid=a.konsinyasiid and d.purchaseid <> :purchaseid) as juminv,
+            where d.itemid=a.itemid and e.konsinyasiid=a.konsinyasiid ) as juminv,
             isnull(a.qty,0)-(select isnull(sum(qty),0) from aptrpurchasedt d 
-            where d.itemid=a.itemid and e.konsinyasiid=a.konsinyasiid and d.purchaseid <> :purchaseid1) as sisa from aptrkonsinyasidt a 
+            where d.itemid=a.itemid and e.konsinyasiid=a.konsinyasiid) as sisa from aptrkonsinyasidt a 
             inner join aptrkonsinyasihd b on a.konsinyasiid=b.konsinyasiid inner join inmsitem c on a.itemid=c.itemid
             left join aptrpurchasehd e on b.konsinyasiid=e.konsinyasiid) as k 
             where  k.sisa <> 0 and k.konsinyasiid=:grnid and k.itemid like :itemidkeyword and k.itemname like :itemnamekeyword
             order by k.konsinyasiid ",
             [
                 'grnid' => $param['grnid'],
-                'purchaseid' => $param['purchaseid'],
-                'purchaseid1' => $param['purchaseid'],
                 'itemidkeyword' => '%' . $param['itemidkeyword'] . '%',
                 'itemnamekeyword' => '%' . $param['itemnamekeyword'] . '%'
 
