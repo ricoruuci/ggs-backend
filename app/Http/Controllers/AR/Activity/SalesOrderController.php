@@ -115,7 +115,8 @@ class SalesOrderController extends Controller
                     'upduser' => Auth::user()->currentAccessToken()['namauser'],
                     'itemname' => $arrDetail[$i]['itemname'],
                     'modal' => $arrDetail[$i]['modal'],
-                    'note' => $arrDetail[$i]['note']
+                    'note' => $arrDetail[$i]['note'],
+                    'bagasi' => $arrDetail[$i]['bagasi']
                 ]);
 
                 if ($insertdetail == false) {
@@ -268,7 +269,8 @@ class SalesOrderController extends Controller
                     'upduser' => Auth::user()->currentAccessToken()['namauser'],
                     'itemname' => $arrDetail[$i]['itemname'],
                     'modal' => $arrDetail[$i]['modal'],
-                    'note' => $arrDetail[$i]['note']
+                    'note' => $arrDetail[$i]['note'],
+                    'bagasi' => $arrDetail[$i]['bagasi']
                 ]);
 
                 if ($insertdetail == false) {
@@ -495,6 +497,43 @@ class SalesOrderController extends Controller
                 DB::commit();
 
                 return $this->responseSuccess('otorisasi berhasil', 200, ['soid' => $request->input('soid')]);
+            } else {
+                DB::rollBack();
+
+                return $this->responseError('gagal update', 400);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return $this->responseError($e->getMessage(), 400);
+        }
+    }
+
+    public function closeSO(Request $request)
+    {
+        $sales = new SalesOrderHd();
+
+        $cek = $sales->cekSalesorder($request->input('soid'));
+
+        if ($cek == false) {
+
+            return $this->responseError('nomor sales order tidak terdaftar', 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $updated = $sales->closeSO([
+                'soid' => $request->input('soid'),
+                'closeby' =>  Auth::user()->currentAccessToken()['namauser'],
+                'fgclose' => $request->input('fgclose')
+            ]);
+
+            if ($updated) {
+
+                DB::commit();
+
+                return $this->responseSuccess('close sales order berhasil', 200, ['soid' => $request->input('soid')]);
             } else {
                 DB::rollBack();
 

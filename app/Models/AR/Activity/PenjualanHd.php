@@ -376,13 +376,13 @@ class PenjualanHd extends BaseModel
     {
         $result = DB::select(
             "SELECT distinct k.poid as soid,prid as pocust,k.transdate,k.salesid,m.salesname,k.custid,l.custname as custname,k.total from ( 
-            select a.poid,b.prid,b.transdate,b.salesid,b.custid,isnull(b.ttlso,0) as total,b.jenis,a.qty,
+            select a.poid,b.prid,b.transdate,b.salesid,b.custid,isnull(b.ttlso,0) as total,b.jenis,a.qty,b.fgclose,
             isnull((select sum(x.qty) from artrpenjualandt x inner join artrpenjualanhd y on x.saleid=y.saleid where y.soid=a.poid and x.itemid=a.itemid),0) as invoice 
             from artrpurchaseorderdt a inner join artrpurchaseorderhd b on a.poid=b.poid 
             ) as k
             inner join armscustomer l on k.custid=l.custid
             inner join armssales m on k.salesid=m.salesid
-            where k.jenis='Y'  and k.qty-k.invoice>0 AND CONVERT(varchar(10),k.transdate,112) <= :tanggal
+            where k.jenis='Y' and k.fgclose='T'  and k.qty-k.invoice>0 AND CONVERT(varchar(10),k.transdate,112) <= :tanggal
             AND k.POID like :soidkeyword and L.custname like :custnamekeyword
             and k.custid like :custidkeyword and k.salesid like :salesidkeyword and m.salesname like :salesnamekeyword
             ORDER BY K.POID",

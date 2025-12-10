@@ -66,6 +66,7 @@ Route::delete('salesorder', [SalesOrderController::class, 'deleteData'])->middle
 Route::get('salesorder/item', [SalesOrderController::class, 'getListBarangSO'])->middleware('auth:sanctum');
 Route::get('listsoblmpo', [SalesOrderController::class, 'getListSOBlmPO'])->middleware('auth:sanctum');
 Route::patch('salesorder/otorisasi', [SalesOrderController::class, 'updateJenis'])->middleware('auth:sanctum');
+Route::patch('salesorder/close', [SalesOrderController::class, 'CloseSO'])->middleware('auth:sanctum');
 // Route::get('salesorder/otorisasi', [SalesOrderController::class, 'getListOto'])->middleware('auth:sanctum');
 
 Route::post('penjualan', [PenjualanController::class, 'insertData'])->middleware('auth:sanctum');

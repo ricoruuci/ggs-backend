@@ -52,9 +52,9 @@ class SalesOrderHd extends BaseModel
 
         $result = DB::insert(
             "INSERT INTO artrpurchaseorderhd 
-            (poid,prid,custid,transdate,note,upddate,upduser,tglkirim,salesid,warehouseid,jenis,fob,fgtax,nilaippn,administrasi,currid,address,attn,telp,fgkomisi,ship,svc,term,hterm,disc,tbagasi) 
+            (poid,prid,custid,transdate,note,upddate,upduser,tglkirim,salesid,warehouseid,jenis,fob,fgtax,nilaippn,administrasi,currid,address,attn,telp,fgkomisi,ship,svc,term,hterm,disc,tbagasi,fgclose) 
             VALUES 
-            (:soid,:pocust,:custid,:transdate,:note,getdate(),:upduser,:tglkirim,:salesid,'01GU','T',:fob,:fgtax,:nilaitax,0,:currid,:address,:attn,:telp,'E',:ship,:svc,:term,:termin,:disc,:tb)",
+            (:soid,:pocust,:custid,:transdate,:note,getdate(),:upduser,:tglkirim,:salesid,'01GU','T',:fob,:fgtax,:nilaitax,0,:currid,:address,:attn,:telp,'E',:ship,:svc,:term,:termin,:disc,:tb,'T')",
             [
                 'soid' => $param['soid'],
                 'pocust' => $param['pocust'],
@@ -77,6 +77,7 @@ class SalesOrderHd extends BaseModel
                 'termin' => $param['termin'],
                 'disc' => $param['disc'],
                 'tb' => $param['tb'],
+                
             ]
         );
 
@@ -184,7 +185,8 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
             WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,
 			
-			isnull(a.attn,'') as attn,isnull(a.telp,'') as telp,a.upddate,a.upduser
+			isnull(a.attn,'') as attn,isnull(a.telp,'') as telp,a.upddate,a.upduser,a.fgclose,
+            Case when a.fgclose='Y' then 'CLOSED' else 'OPEN' end as statusclose,a.closeby,a.closedate
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
@@ -251,7 +253,8 @@ class SalesOrderHd extends BaseModel
             WHEN A.Jenis='OL' THEN 'OVERDUE & OVERLIMIT'
             WHEN A.Jenis='OLG' THEN 'JUAL RUGI, OVERDUE, & OVERLIMIT' END as statusoto,isnull(otoby,'') as otouser,isnull(a.svc,0) as svc,
 			
-			isnull(a.attn,'') as attn,isnull(a.telp,'') as telp,a.upddate,a.upduser
+			isnull(a.attn,'') as attn,isnull(a.telp,'') as telp,a.upddate,a.upduser,a.fgclose,
+            Case when a.fgclose='Y' then 'CLOSED' else 'OPEN' end as statusclose,a.closeby,a.closedate
             from ARTrPurchaseOrderHd a 
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
@@ -269,14 +272,14 @@ class SalesOrderHd extends BaseModel
     {
         $result = DB::select(
             "SELECT k.poid as soid,k.transdate,k.custname from (
-            select a.poid,a.transdate,sum(b.qty) as total,a.jenis,c.custname,
+            select a.poid,a.transdate,sum(b.qty) as total,a.jenis,isnull(a.fgclose,'T') as fgclose,c.custname,
             isnull((select sum(x.qty) from artrpenawarandt x inner join artrpenawaranhd y on x.gbuid=y.gbuid and y.flag='B' 
             where y.soid=a.poid),0) as jumpo 
             from artrpurchaseorderhd a inner join artrpurchaseorderdt b on a.poid=b.poid 
             inner join armscustomer c on a.custid=c.custid 
-            group by a.poid,a.transdate,a.jenis,c.custname,a.ttlso
+            group by a.poid,a.transdate,a.jenis,c.custname,a.ttlso,a.fgclose
             ) as k 
-            where k.total-k.jumpo > 0 and k.jenis='Y' 
+            where k.total-k.jumpo > 0 and k.jenis='Y' and k.fgclose='T'
             and convert(varchar(8),k.transdate,112) <= :transdate
             order by k.poid",
             [
@@ -334,7 +337,7 @@ class SalesOrderHd extends BaseModel
             inner join armscustomer b on a.custid=b.custid
             inner join armssales c on a.salesid=c.salesid
             left join armssales d on a.warehouseid=d.salesid
-            where A.Jenis NOT IN ('Y','X','T')  
+            where A.Jenis NOT IN ('Y','X','T')  and a.fgclose='T'
             ORDER BY a.transdate ,A.POID"
         );
 
@@ -589,6 +592,20 @@ class SalesOrderHd extends BaseModel
     } else {
         $result = false;
     }
+
+        return $result;
+    }
+
+    function closeSO($param)
+    {
+        $result = DB::update(
+            'UPDATE artrpurchaseorderhd SET fgclose = :fgclose, closeby = :closeby, closedate = getdate() WHERE poid = :soid',
+            [
+                'soid' => $param['soid'],
+                'fgclose' => $param['fgclose'],
+                'closeby' => $param['closeby']
+            ]
+        );
 
         return $result;
     }

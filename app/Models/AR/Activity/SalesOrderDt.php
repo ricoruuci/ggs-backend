@@ -39,7 +39,7 @@ class SalesOrderDt extends Model
             "INSERT INTO artrpurchaseorderdt
             (poid,urut,itemid,qty,price,upddate,upduser,itemname,modal,bagasi,keterangan) 
             VALUES 
-            (:soid,:urut,:itemid,:qty,:price,getdate(),:upduser,:itemname,:modal,0,:note)",
+            (:soid,:urut,:itemid,:qty,:price,getdate(),:upduser,:itemname,:modal,:bagasi,:note)",
 
             [
                 'soid' => $param['soid'],
@@ -50,7 +50,8 @@ class SalesOrderDt extends Model
                 'upduser' => $param['upduser'],
                 'itemname' => $param['itemname'],
                 'modal' => $param['modal'],
-                'note' => $param['note']
+                'note' => $param['note'],
+                'bagasi' => $param['bagasi']
             ]
         );
 
