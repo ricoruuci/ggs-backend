@@ -61,7 +61,7 @@ class SalesOrderDt extends Model
     function getData($param)
     {
         $result = DB::select(
-            "SELECT a.itemid,a.urut,a.qty,a.price,b.uomid,a.upddate,a.upduser,a.itemname,a.modal,
+            "SELECT a.itemid,a.urut,a.qty,a.price,b.uomid,a.upddate,a.upduser,a.itemname,a.modal,isnull(a.bagasi,0) as bagasi,
             isnull(a.keterangan,'') as note,a.qty*a.price as total
             from artrpurchaseorderdt a inner join inmsitem b on a.itemid=b.itemid WHERE a.poid = :soid ",
             [
