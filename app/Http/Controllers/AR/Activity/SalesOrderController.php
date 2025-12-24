@@ -395,7 +395,8 @@ class SalesOrderController extends Controller
         $sales = new SalesOrderHd();
 
         $result = $sales->getListSOBlmPO([
-            'transdate' => $request->input('transdate')
+            'transdate' => $request->input('transdate'),
+            'soidkeyword' => $request->input('soidkeyword') ?? ''
         ]);
 
         $resultPaginated = $this->arrayPaginator($request, $result);

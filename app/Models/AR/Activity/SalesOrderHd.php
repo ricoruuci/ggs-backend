@@ -281,9 +281,11 @@ class SalesOrderHd extends BaseModel
             ) as k 
             where k.total-k.jumpo > 0 and k.jenis='Y' and k.fgclose='T'
             and convert(varchar(8),k.transdate,112) <= :transdate
+            and k.poid like :soidkeyword
             order by k.poid",
             [
-                'transdate' => $param['transdate']
+                'transdate' => $param['transdate'],
+                'soidkeyword' => '%' . $param['soidkeyword'] . '%'
             ]
         );
 
